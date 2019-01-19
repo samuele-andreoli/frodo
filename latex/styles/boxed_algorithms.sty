@@ -1,0 +1,32 @@
+\usepackage{amsmath}
+
+%% Protocol environment %%
+% Implements its own counter
+%
+% Usage:
+% \begin{b_algorithm}{Title}{Input data}{Return data}
+%
+
+\newcounter{balgorithm}
+\numberwithin{balgorithm}{section}
+\newenvironment{b_algorithm}[4]{
+\refstepcounter{balgorithm}
+\label{#4}
+\begin{table}[htpb]
+\begin{tabular}{c}
+\hline
+\textbf{Algorithm \thebalgorithm.} \textit{#1}\\
+\hline
+\begin{algorithm}[H]
+\KwData{#2}
+\KwResult{#3}
+\begin{algorithmic}
+}
+{
+\end{algorithmic}
+\end{algorithm}\\
+\hline
+\hline
+\end{tabular}
+\end{table}
+}

@@ -1,0 +1,27 @@
+\usepackage{amsmath}
+
+%% Protocol environment %%
+% Implements its own counter
+%
+% Usage:
+% \begin{protocol}{actor A}{actor B}{Title}
+%
+
+\newcounter{protocol}
+\numberwithin{protocol}{chapter}
+\newenvironment{protocol}[3]{
+\refstepcounter{protocol}
+\begin{table}
+\begin{tabular}{|c|c|}
+\hline
+\multicolumn{2}{l}{\textbf{Protocol~\theprotocol.} \textit{#1}}\\
+\hline
+#2 & #3 \\
+\hline
+}
+{
+\hline
+\hline
+\end{tabular}
+\end{table}
+}

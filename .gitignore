@@ -1,0 +1,24 @@
+# Dependencies
+milagro-crypto-c
+
+# Build files
+.objects
+build
+
+# Install files
+install
+
+# Latex files
+latex/*.bak
+latex/*.aux
+latex/*out
+latex/*.bbl
+latex/*.blg
+latex/*dvi
+latex/*.idx
+latex/*.log
+latex/*.ps
+latex/*.toc
+latex/*~
+latex/src/*.bak
+latex/src/*~

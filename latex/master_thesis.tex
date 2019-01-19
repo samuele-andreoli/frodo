@@ -1,0 +1,105 @@
+\documentclass[a4paper]{book}
+
+%% Common styles
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+%% Math symbols
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+
+%% Better looking matrices
+\usepackage{multirow}
+
+%% Pseudocode
+\usepackage{algorithm2e}
+\usepackage{algorithmic}
+\usepackage{verbatim}
+
+%% Styles for bibliography and references
+\usepackage{url}
+\usepackage{cite}
+\usepackage[numbers]{natbib}
+\usepackage{hyperref}
+\usepackage{breakurl}
+\hypersetup{
+    breaklinks=true,    
+    colorlinks=true,
+    anchorcolor=blue, 
+    citecolor=blue,
+    filecolor=blue,
+    linkcolor=blue,
+    menucolor=blue,
+    runcolor=blue,
+    urlcolor=blue
+}
+
+%% Custom styles
+\usepackage{styles/protocol}
+\usepackage{styles/boxed_algorithms}
+
+%% Graphic settings 
+\renewcommand{\ttdefault}{pcr}
+
+%% Assets directories
+\graphicspath{
+{./assets/}
+}
+
+%% Initialize environments
+\newtheorem{theorem}{Theorem}
+
+%% Initialize indexing
+\makeindex
+\pagenumbering{roman}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Before indexing %%%
+
+%% Title page
+\begin{titlepage}
+\begin{center}
+Master Thesis \\
+Samuele Andreoli \\  
+\end{center}
+\end{titlepage}
+
+%% Introduction %%
+\pagenumbering{roman}
+\chapter*{Introduction}\label{ch:introduction}
+\input{src/introduction.tex}
+
+%% Index %%
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Start indexing %%%
+\pagenumbering{arabic}
+
+%% Theoretical Background %%
+\chapter{Theoretical Background}\label{ch:th_background}
+\input{src/theoretical_background.tex}
+
+%% Previous works
+\chapter{Previous PQKE}
+\input{src/previous_work.tex}
+
+%% New Hope and Frodo %%
+\chapter{New Hope and Frodo}\label{ch:protocols}
+\input{src/protocols.tex}
+
+%% Implementation %%
+\chapter{Implementation}\label{ch:implementation}
+\input{src/implementation.tex}
+
+%% Conclusion %%
+\chapter*{Conclusions}\label{ch:conclusions}
+\input{src/conclusions.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bibliography %%
+\bibliography{master_thesis.bib}{}
+\bibliographystyle{plainnat}
+
+\end{document}

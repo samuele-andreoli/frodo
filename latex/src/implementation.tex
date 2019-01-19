@@ -1,0 +1,23 @@
+%         Frodo
+
+%         Parametri [https://bitbucket.org/malb/lwe-estimator]
+
+%         Performance 
+
+%                 Complessità
+%                 Performace da soli
+%                 Comparazione con altri metodi lattice based
+
+\section{Computational Complexity}
+
+\section{Implementation Rationale}
+When it comes to implement Frodo, there are several choices to be done. Let's examine the most important of them.
+
+\subsection{Element representation}
+The core choice we need to make when implementing Frodo is element representation, which can either be tight or redundant. A tight representation would save memory, but it would burden the implementation with the modular arithmetic handling. On the other hand, a redundant representation would ease this burden, either by using lazy reduction, or by carefully selecting modulo and bits so that overflows can be exploited to automatically take care of modular arithmetic. This comes at the cost of an increased memory usage.\\
+The authors of \cite{frodo} have no doubts on their choice, and their intents are quite clear from the parameters choice. They don't even consider using lazy reduction and force the modulus to be a power of two, thus enabling the implementation to ignore the modular arithmetic. Indeed, considering that the highest possible modulus in any parameter choice is $2^{15}$, an element of a matrix can always be represented as an integer in $\mathbf{Z}_{16}$. This means that an element can always fit an unsigned $16$ bit integer, regardless of the parameter choice, and that the modular arithmetic is taken car of by integer overflow.\\
+The final advantage of this representation comes when an element needs to be reduced to fit in $\mathbf{Z}_n$: a single AND instruction with the mask $2^{n}-1$ is enough to compute the desired value.
+
+\subsection{Parameter generation}
+
+\subsection{Element packing}

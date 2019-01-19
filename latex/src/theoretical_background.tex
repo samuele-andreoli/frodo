@@ -1,0 +1,39 @@
+%         Reticoli
+
+%         Prime Proposte [pqc]
+
+%                 GGH
+%                         Molto inefficiente
+%                 NTRU
+%                         Efficienza
+%                         Mancanza di riduzione da problemi noti NP-hard sul reticoli
+%                 lwe
+%                         Primo ad essere pratico e ad avere riduione da SIS.
+
+
+%         Problema dell'LWE [pqc]
+
+%                 Introduzione
+%                 Presentazione del problema dell'lwe
+
+%                         Distribuzione di errore
+%                         Encoding/decoding
+
+%                 Algoritmi (fft, fast decoding)
+%                 Problematiche (rappresentazione richiede O(n^2) e la chiave vive in Zq^n)
+
+
+%         Problema dell'RLWE [RLWE_security, RLWE_toolkit]
+
+%                 Presentazione del problema dell'RLWE
+%                 Problemi risolti dal'uso della struttura di anello:
+%                 - Rappresentazione ora richiede solo O(n)
+%                 - La chiave vive in Rq (1/n dello spazio)
+%                 - Decoding più veloce
+
+%         Prova di sicurezza [pqc, RLWE_security]
+
+%                 Presentazione di SVP e SIS
+%                 Riduzione di SVP e SIS a RLWE e LWE 
+%                 [RLWE_security per SVP -> search-RLWE -> decisional RLWE]
+%                 [SVP -> BDD -> LWE]
