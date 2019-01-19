@@ -106,7 +106,8 @@ void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
         }
 
         // Restore sign of sample
-        *(samples++) = FRODO_I_SAMPLE_SIGN(*samples,((FRODO_entropy_stripe*)entropy)->sign);
+        *(samples) = FRODO_I_SAMPLE_SIGN(*samples,((FRODO_entropy_stripe*)entropy)->sign);
+        samples++;
     }
 #elif FRODO_DISTRIBUTION_BITS == 12
     for(size_t i = 0; i < n_samples; i+=2)
@@ -142,7 +143,8 @@ void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
         }
 
         // Restore sign of sample
-        *(samples++) = FRODO_I_SAMPLE_SIGN(*samples,((FRODO_entropy_stripe*)entropy)->sign);
+        *(samples) = FRODO_I_SAMPLE_SIGN(*samples,((FRODO_entropy_stripe*)entropy)->sign);
+        samples++;
     }
 #endif
 }

@@ -27,9 +27,14 @@ void FRODO_pack_share(uint8_t dst[FRODO_PACKED_SHARE_LENGTH], uint16_t* src)
 #if FRODO_MODULUS == 12
    for(int i = 0, j = 0; j < FRODO_PACKED_SHARE_LENGTH;)
    {
-      dst[j++] = src[i] >> 4 & 0xFF;
-      dst[j++] = (src[i++] & 0x0F) << 4 | src[i] >> 8 & 0x0F;
-      dst[j++] = src[i++] & 0xFF;
+      dst[j] = src[i] >> 4 & 0xFF;
+      j++;
+      dst[j] = ((src[i] & 0x0F) << 4) | ((src[i+1] >> 8) & 0x0F);
+      j++;
+      i++;
+      dst[j] = src[i] & 0xFF;
+      j++;
+      i++;
    }
 #else
    int bit_position = 0;
@@ -63,8 +68,12 @@ void FRODO_unpack_share(uint16_t* dst, uint8_t src[FRODO_PACKED_SHARE_LENGTH])
 #if FRODO_MODULUS == 12
    for(int i = 0, j = 0; j < FRODO_PACKED_SHARE_LENGTH;)
    {
-      dst[i++] = ((uint16_t)src[j++]) << 4 | src[j] >> 4;
-      dst[i++] = ((uint16_t)src[j++]) << 8 | src[j++];
+      dst[i] = ((uint16_t)src[j]) << 4 | src[j+1] >> 4;
+      i++;
+      j++;
+      dst[i] = ((uint16_t)src[j]) << 8 | src[j+1];
+      i++;
+      j+=2;
    }
 #else
    int bit_position = 0;
