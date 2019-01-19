@@ -117,7 +117,7 @@ $(TEST_TARGETS): ${BINDIR}/%.test: ${BINDIR}/%
 	@echo "------------------------------------------------------------"
 	@echo "  Run $<"
 	@echo "  $<" >> ${TEST_REPORT}
-	@export LD_LIBRARY_PATH=${FRODO_LIBRARY_PATH}:${MILAGRO_LIBRARY_PATH}; ./$< >> ${BENCH_REPORT} &&												\
+	@export LD_LIBRARY_PATH=${FRODO_LIBRARY_PATH}:${MILAGRO_LIBRARY_PATH}; ./$< >> ${TEST_REPORT} &&												\
 	(echo "    - Test successful"; echo "    - Test successful" >> ${TEST_REPORT};) || \
 	(echo "    - Test failed"; echo "    - Test failed" >> ${TEST_REPORT};)
 
