@@ -55,6 +55,7 @@ int main()
     {
         if((key[i]^key_with_hint[i]) != 0)
         {
+            printf("Reconciled keys do not match\n");
             return 1;
         }
     }

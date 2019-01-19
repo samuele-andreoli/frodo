@@ -28,7 +28,7 @@
 const uint16_t mask = (1 << FRODO_MODULUS) - 1;
 
 int main()
-{   
+{
     csprng RNG;
     char rng_seed[100];
 
@@ -56,6 +56,7 @@ int main()
     {
         if(BTW_CMP(share[i], recovered_share[i]))
         {
+            printf("Packing and unpacking are not consistent\n");
             return 1;
         }
     }

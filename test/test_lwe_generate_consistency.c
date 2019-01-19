@@ -64,6 +64,7 @@ int main()
     {
         if(pauto[i] != pman[i])
         {
+            printf("Inconsistency in left share\n");
             return 1;
         }
     }
@@ -74,6 +75,7 @@ int main()
     {
         if(pauto[i] != pman[i])
         {
+            printf("Inconsistency in right share\n");
             return 1;
         }
     }
