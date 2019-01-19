@@ -17,24 +17,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <time.h>
-#include "frodo.h"
-
-float start, end;
-
-#define BENCHTEST(name, func, iterations) \
-	printf("------------------------------------------------------------\n"); \
-	printf("Benchmark %s\n", name); \
-	start = (float)clock(); \
-	for(int i = 0; i < iterations; i++) \
-	{ \
-		func; \
-	} \
-	end = (float)clock(); \
-	printf("Time elapsed %f\n", (end-start)/CLOCKS_PER_SEC); \
-	printf("Iterations %d\n", iterations); \
-	printf("Time per iteration %fs\n", (end-start)/(CLOCKS_PER_SEC * iterations)); \
-	printf("------------------------------------------------------------\n");
+#include "benchmark.h"
 
 int main() {
 	csprng RNG;
