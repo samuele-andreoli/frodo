@@ -57,6 +57,10 @@ int main()
 
     FRODO_left_key_agreement(&RNG, key_left, left_keyshare, hint, right_keyshare, &lk);
 
+    printf("Left reconciled key\n");
+    PRINT_BYTE_ARRAY(key_left, FRODO_KEY_LENGTH);
+    printf("\n");
+
     // Perform right keyshare
     uint8_t key_right[FRODO_KEY_LENGTH] = {0};
 
