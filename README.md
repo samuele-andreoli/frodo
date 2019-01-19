@@ -1,8 +1,8 @@
 # FRODO! Take off the ring
 
  * **category**: Library
- * **copyright**: 2018 Samuele Andreoli
- * **license**: ASL 2.0 [[Apache License 2.0]](http://www.apache.org/licenses/LICENSE-2.0)
+ * **copyright**: 2019 Samuele Andreoli
+ * **license**: ISC License
 
 ## Description
 C implementation of the FRODO post quantum secure key exchange.
