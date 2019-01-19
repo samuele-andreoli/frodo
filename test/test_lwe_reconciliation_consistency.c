@@ -18,43 +18,42 @@
  */
 
 #include "amcl.h"
-#include "packing.h"
-
-#define BTW_CMP(a,b) (((a) ^ (b)) & mask) != 0
-
-#define PRINT_BYTE_ARRAY(k, s) for(int i = 0; i < s; i++) printf("%04X", k[i]);
-
-
-const uint16_t mask = (1 << FRODO_MODULUS) - 1;
+#include "lwe_reconciliation.h"
 
 int main()
-{   
+{
     csprng RNG;
     char rng_seed[100];
 
-    uint16_t share[FRODO_N * FRODO_BAR_N] = {0};
-    uint8_t packed[FRODO_PACKED_SHARE_LENGTH] = {0};
-    uint16_t recovered_share[FRODO_N * FRODO_BAR_N] = {0};
-
-    for (int i=0; i<100; i++)
-    {
+    for (int i=0;i<100;i++)
         rng_seed[i] = i;
-    }
     RAND_seed(&RNG, 100, rng_seed);
 
-    for(int i = 0; i < FRODO_N * FRODO_BAR_N; i++)
+    // Use same matrix for testing
+    uint16_t m[FRODO_BAR_N][FRODO_BAR_N];
+    for(int i = 0; i < FRODO_BAR_N; i++)
     {
-        share[i] = ((uint16_t)RAND_byte(&RNG) << 8) | ((uint16_t)RAND_byte(&RNG));
+        for(int j = 0; j < FRODO_BAR_N; j++)
+        {
+            m[i][j] = (uint8_t)RAND_byte(&RNG) << 8 | (uint8_t)RAND_byte(&RNG);
+        }
     }
 
-    // Pack and unpack
-    FRODO_pack_share(packed, share);
-    FRODO_unpack_share(recovered_share, packed);
+    // Regular econciliation
+    uint8_t key[FRODO_KEY_LENGTH] = {0};
+    FRODO_reconcilitaion(key, (uint16_t*)m);
+
+    // Reconciliation with hint
+    uint8_t hint[FRODO_HINT_LENGTH] = {0};
+    uint8_t key_with_hint[FRODO_KEY_LENGTH] = {0};
+
+    FRODO_hint(hint, (uint16_t*)m);
+    FRODO_reconcilitaion_with_hint(key_with_hint, hint, (uint16_t*)m);
 
     // Diff mask
-    for(int i=0; i<FRODO_N * FRODO_BAR_N; i++)
+    for(int i=0; i<FRODO_KEY_LENGTH; i++)
     {
-        if(BTW_CMP(share[i], recovered_share[i]))
+        if((key[i]^key_with_hint[i]) != 0)
         {
             return 1;
         }

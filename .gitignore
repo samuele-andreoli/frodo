@@ -5,6 +5,9 @@ milagro-crypto-c
 .objects
 build
 
+# Test files
+test_report.txt
+
 # Install files
 install
 
