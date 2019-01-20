@@ -66,7 +66,6 @@ int main() {
 
     // Chi squared test
     double weight = N_SAMPLES / (2 * (CDF[FRODO_CDF_LENGTH-1] + 1));
-    printf("weight: %lf", weight);
 
     double expectations[2*FRODO_CDF_LENGTH-1];
     expectations[zero_pos] = CDF[0] * weight;
@@ -79,8 +78,6 @@ int main() {
     double chi_squared = 0;
     for(int i=0; i<2*FRODO_CDF_LENGTH-1; i++)
     {
-        printf("counts[%d]: %d", i, counts[i]);
-        printf("expectations[%d]: %f", i, expectations[i]);
         chi_squared += (counts[i] - expectations[i]) / expectations[i];
     }
 
