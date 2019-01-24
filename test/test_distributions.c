@@ -87,5 +87,7 @@ int main() {
         return 1;
     }
 
+    printf("Chi square: %lf\n", chi_squared);
+
     return 0;
 }

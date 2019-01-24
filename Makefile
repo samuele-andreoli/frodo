@@ -33,7 +33,7 @@ LIBRARY_PATH := $(shell echo ${LD_LIBRARY_PATH}):${MILAGRO_LIBRARY_PATH}:${FRODO
 
 ## Compilation options
 CC := gcc
-BASEFLAGS := -Wall -Werror -Wextra -pedantic
+BASEFLAGS := -Wall -Werror -Wextra -pedantic -O3
 
 ### Prepare env ###
 BUILD_SOURCES := $(shell find ${SRCDIR} -type f -name "*.c")
