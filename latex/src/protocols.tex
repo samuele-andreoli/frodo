@@ -13,6 +13,32 @@ The security of the key exchange is only marginally affected by the choice of th
 Let $\xi$ be the rounded Gaussian distribution of parameter $\sigma = \sqrt{8}$, let $\mathscr{P}$ be the idealized version of protocol \ref{prot:newhope}, using the distribution $\xi$ instead of $\Psi_16$. If an unbounded algorithm succeeds in recovering the pre-hash key $\nu$, given a transcript of an instance of protocol \ref{prot:newhope}, then it would also succeed against $\mathscr{P}$ with probability $q\ge p^{9/8}/26$.
 \end{theorem}
 
+\subsection{Recovery from errors}
+In R-LWE applications, usually, one bit of information is encoded in each of the polynomial coefficients. In the context of a key exchange, though, this translates to a message space larger than necessary. This is an opportunity to introduce redundancy in the transmitted message (i.e. the key), trying to increase error tolerance. The authors of New Hope provide a generalization of a bit encoding using two coefficients, presented in [TODO add citation], which allows to encode a bit in 4 coefficients, further increasing the error tolerance w.r.t to the previous method using two coefficients. It is worth pointing out that the encoding part is not really important as far as the New Hope protocol is concerned. Indeed, the polynomials are always created either as result of operations on other polynomials, or via sampling from some distribution. Decoding, on the other hand, is used to extract the bits of the pre-hash key from the polynomials $\textbf{v}$ and $\textbf{v'}$, and is thus a crucial step of the reconciliation procedure. In order to build this encoding, a polynomial $f(X) \in \mathscr{R} = \mathbb{Z}[X]/(X^n+1)$ has to be split in $n/4$ groups of $4$ coefficients. Then, bits need to be encoded into, and decoded from, groups of four coefficients.
+
+\subsubsection{Polynomial splitting}
+The first goal, i.e. the polynomial splitting, can be quite naturally accomplished observing that, given $\mathscr{S} = \mathbb{Z}[X]/(X^4+1)$, we can write $f(X) \in \mathscr{R}$ as $f(X) = f_0 + f_1X + \ldots + f_{1023}X^{1023} = f'_0(X^{256}) + \ldots + f'_{255}(X^{256})X^{255}$, where the $f'_i$ are elements of $\mathscr{S}$, thus identifying $f(X)$ with the vector $(f'_0,\ldots,f'_{255}) \in \mathscr{S}^{256}$. This means that each $f'_i$ is the polynomial of coefficients $f_i,f_{i+256},f_{i+512},f_{i+768}$, which can be identified with a vector in $\mathbb{Z}^4$.
+
+\subsubsection{Bit encoding}
+For the encoding, the authors propose to use the lattice $\tilde{D}_4 = \mathbb{Z}^4 \cup \mathbf{g} + \mathbb{Z}^4$, where \textbf{g} is the glue vector $(\frac{1}{2},\frac{1}{2},\frac{1}{2},\frac{1}{2})^t$, such lattice has Voronoi cell $\mathscr{V}$ with relevant vectors $(\pm1,0,0,0),(0,\pm1,0,0),(0,0,\pm1,0),(0,0,0,\pm1)$, said type-A, and $(\pm\frac{1}{2},\pm\frac{1}{2},\pm\frac{1}{2},\pm\frac{1}{2})$, said type-B, respectively 8 and 16 in number.\\
+The condition for a correct error recovery, given the cell $\mathscr{V}$, is that given the error vector $e$, then $e\in\mathscr{V}$. This condition can be rewritten as $\langle e,v \rangle \leq \frac{1}{2} \forall v $ relevant vectors. The distinction between the type-A and type-B can be used to cleverly regroup these equations, obtaining $\left\lVert e \right\rVert_{\infty} \leq \frac{1}{2}$ for type-A vectors, and $\left\lVert e \right\rVert_1 \leq 1$ for type-B vectors.\\
+The last component for the encoding is a base for $\tilde{D}_4$. The authors of \cite{newhope} propose the base $\mathbf{B} = (\mathbf{u}_0,\mathbf{u}_1,\mathbf{u}_2,\mathbf{g})$. Although this might not seem the most natural choice, the presence of the glue vector gives an efficient algorithm for decoding over $\tilde{D}_4/\mathbb{Z}^4$.\\
+Indeed, considering that $\mathbf{u}_0,\mathbf{u}_1,\mathbf{u}_2,2\mathbf{g} \in \mathbb{Z}^4$, a vector in $\tilde{D}_4/\mathbb{Z}^4$ is given by the parity of its last coordinate. This means that the encoding of a bit $k\in\mathbb{Z}_2$ can be computed as in Algorithm \ref{alg:nh:encode}, as $k\mathbf{g}$. The decoding is described in Algorithm \ref{alg:nh:decode}, and it can be summed up as looking for the closest vector to the element $\mathbf{x}\in\tilde{D}_4$ to decode, between $\mathbf{0}$ and $\mathbf{g}$. It is easy to see that if $e\in\mathscr{V}$, then $\mathbf{x} + e$ will still be in the same Voronoi cell of $\mathbf{x}$.
+
+\subsubsection{Reconciliation}
+Finally, all of the ingredients for the reconciliation mechanism are in place. The closest vector any $\mathbf{x}\in\mathbb{R}$ can be computed using the $CVP_{\tilde{D}_4}$ algorithm, descirbed in Algorithm \ref{alg:nh:CVP}, and with this the r-bit reconciliation function \verb|HelpRec| can be defined as 
+\begin{equation}
+CVP_{\tilde{D}_4}\left(\frac{2^r}{q}(\mathbf{x}+b\mathbf{g})\right) mod 2^r, where \xleftarrow{\$}U[\{0,1\}]
+\end{equation}
+Let's call $\mathbf{r}$ the output of the reconciliation function. The final extracted bits can then be computed as 
+\begin{equation}
+\verb|Decode|\left(\frac{1}{q}\mathbf{x}-\mathbf{Br}\right) 
+\end{equation}
+Applying this algorithm to the polynomial split computed above, the full key can be recovered.\\
+The vector $r$, output of the \verb|HelpRec| function, will then be transmitted to the other party, allowing it to apply the final reconciliation to its polynomial split, thus recovering the same key.
+
+\subsubsection{Failure rate}
+
 \subsection{Generation of \textbf{a}}\label{sec:nh:a_generation}
 The parameter \textbf{a} was made ephemeral, in order to avoid all-for-the-price-of-one attacks and parameter manipulation\footnote{For example, the parameter \textbf{a} can be trapdoored, as described in \cite{RLWE_trapdoor} and \cite{newhope}.}. Generating a fresh \textbf{a} for each run of the protocol, opens two problems. The generation of \textbf{a} is computationally somewhat costly, and the generated parameter has to be transmitted to the other party of the key exchange, posing a bandwidth problem.\\
 The former issue can be mitigated by caching the parameter \textbf{a} for multiple instances of the protocol, since it has only a marginal effect on the resilience against all-for-the-price-of-one attack. As we can see in Protocol \ref{prot:newhope}, this is quite useful for Alice, which is identified as the Server in a Client-Server connection, and could still be of some use to Bob, which is the Client.\\
@@ -34,22 +60,9 @@ It's worth to point out that although \verb|Parse| rejects some of the material 
 \ENDWHILE
 \end{b_algorithm}
 
-\subsection{Recovery from errors}
-In R-LWE applications, usually, one bit of information is encoded in each of the polynomial coefficients. In the context of a key exchange, though, this translates to a message space larger than necessary. This is an opportunity to introduce redundancy in the transmitted message (i.e. the key), trying to increase error tolerance. The authors of New Hope provide a generalization of a bit encoding using two coefficients, presented in [TODO add citation], which allows to encode a bit in 4 coefficients, further increasing the error tolerance w.r.t to the previous method using two coefficients. It is worth pointing out that the encoding part is not really important as far as the New Hope protocol is concerned. Indeed, the polynomials are always created either as result of operations on other polynomials, or via sampling from some distribution. Decoding, on the other hand, is used to extract the bits of the pre-hash key from the polynomials $\textbf{v}$ and $\textbf{v'}$, and is thus a crucial step of the reconciliation procedure. In order to build this encoding, a polynomial $f(X) \in \mathscr{R} = \mathbf{Z}[X]/(X^n+1)$ has to be split in $n/4$ groups of $4$ coefficients. Then, bits need to be encoded into, and decoded from, groups of four coefficients.
-
-\subsubsection{Polynomial splitting}
-The first goal, i.e. the polynomial splitting, can be quite naturally accomplished observing that, given $\mathscr{S} = \mathbf{Z}[X]/(X^4+1)$, we can write $f(X) \in \mathscr{R}$ as $f(X) = f_0 + f_1X + \ldots + f_{1023}X^{1023} = f'_0(X^{256}) + \ldots + f'_{255}(X^{256})X^{255}$, where the $f'_i$ are elements of $\mathscr{S}$, thus identifying $f(X)$ with the vector $(f'_0,\ldots,f'_{255}) \in \mathscr{S}^{256}$. This means that each $f'_i$ is the polynomial of coefficients $f_i,f_{i+256},f_{i+512},f_{i+768}$, which can be identified with a vector in $\mathbf{Z}^4$.
-
-\subsubsection{Bit encoding}
-For the encoding, the authors propose to use the lattice $\tilde{D}_4 = \mathbf{Z}^4 \cup \mathbf{g} + \mathbf{Z}^4$, where \textbf{g} is the glue vector $(\frac{1}{2},\frac{1}{2},\frac{1}{2},\frac{1}{2})^t$, such lattice has Voronoi cell $\mathscr{V}$ with relevant vectors $(\pm1,0,0,0),(0,\pm1,0,0),(0,0,\pm1,0),(0,0,0,\pm1)$, said type-A, and $(\pm\frac{1}{2},\pm\frac{1}{2},\pm\frac{1}{2},\pm\frac{1}{2})$, said type-B, respectively 8 and 16 in number.
-%% TODO Finish decoding in D4 and Z4/D4
-
-\subsubsection{Failure rate}
-
-
 \begin{b_algorithm}{$CVP_{\tilde{D}_4}$}
 {$\textbf{x} \in \mathbf{R}^4$}
-{$\textbf{z} \in \mathbf{Z}^4\text{ }s.t.\text{ }\textbf{x} - \textbf{Bz} \in \mathscr{V}$}
+{$\textbf{z} \in \mathbb{Z}^4\text{ }s.t.\text{ }\textbf{x} - \textbf{Bz} \in \mathscr{V}$}
 {alg:nh:CVP}
 \STATE $\textbf{v}_0 \gets \lfloor\textbf{x}\rceil$
 \STATE $\textbf{v}_1 \gets \lfloor\textbf{x}-\textbf{g}\rceil$
@@ -64,14 +77,14 @@ For the encoding, the authors propose to use the lattice $\tilde{D}_4 = \mathbf{
 
 \begin{b_algorithm}{Encode}
 {$k \in \{0,1\}$}
-{$\textbf{x} \in \mathbf{R}^4/\mathbf{Z}^4$, the encoding}
+{$\textbf{x} \in \mathbf{R}^4/\mathbb{Z}^4$, the encoding}
 {alg:nh:encode}
 \RETURN $k\cdot\textbf{g}$
 \end{b_algorithm}
 
 \begin{b_algorithm}{Decode}
-{$\textbf{x} \in \mathbf{R}^4/\mathbf{Z}^4$}
-{$k \in \{0,1\}\text{ }s.t.\text{ }\textbf{x} - k\textbf{g} \in \mathscr{V}+\mathbf{Z}^4$}
+{$\textbf{x} \in \mathbf{R}^4/\mathbb{Z}^4$}
+{$k \in \{0,1\}\text{ }s.t.\text{ }\textbf{x} - k\textbf{g} \in \mathscr{V}+\mathbb{Z}^4$}
 {alg:nh:decode}
 \STATE $\textbf{v} \gets \mathbf{x} - \lfloor\mathbf{x}\rceil$
 \IF{$\|\textbf{v}\|_1\le1$}
@@ -81,7 +94,7 @@ For the encoding, the authors propose to use the lattice $\tilde{D}_4 = \mathbf{
 \ENDIF
 \end{b_algorithm}
 
-\subsubsection{NTT and message encoding}
+\subsubsection{NTT and message encoding}\label{sec:nh:ntt}
 As mentioned above, 
 
 \subsection{Protocol run}
@@ -113,20 +126,20 @@ Since the same security issues pointed out in \cite{newhope} are still valid in 
 Moreover, the authors present four different easy to sample noise distributions which might be used in place of the rounded Gaussian distribution used in \cite{BCNS}.
 
 \subsection{Reconciliation}
-The reconciliation mechanism for Frodo is a generalization of the mechanism presented in \cite{peikert_2014}. This generalized mechanism allows packing one or more bit in each approximate agreed element of $\mathbf{Z}_q$\footnote{In this paragraph, $q$ is chosen to be a power of two, but this mechanism can be adapted to work with any modulus.}, similarly to the reconciliation mechanism of New Hope. On the other hand, while in New Hope there was plenty of room to add some redundancy in the agreed polynomial, this is a luxury the authors of Frodo couldn't afford. On the contrary, for realistic security levels more bits need to be packed in each approximate agreed value. In fact, in order to achieve a security level of $s$ bits, we need to choose $\bar{n}$, $\bar{m}$ and $B$, the number of bits packed into an agreed value, such that $s\ge\bar{m}\bar{n}B$. Increasing $B$ allows to reduce $\bar{m}$ and $\bar{n}$, i.e. the dimension of the LWE matrices, thus decreasing not only the computational cost, but also the bandwidth requirements of the algorithm.\\
+The reconciliation mechanism for Frodo is a generalization of the mechanism presented in \cite{peikert_2014}. This generalized mechanism allows packing one or more bit in each approximate agreed element of $\mathbb{Z}_q$\footnote{In this paragraph, $q$ is chosen to be a power of two, but this mechanism can be adapted to work with any modulus.}, similarly to the reconciliation mechanism of New Hope. On the other hand, while in New Hope there was plenty of room to add some redundancy in the agreed polynomial, this is a luxury the authors of Frodo couldn't afford. On the contrary, for realistic security levels more bits need to be packed in each approximate agreed value. In fact, in order to achieve a security level of $s$ bits, we need to choose $\bar{n}$, $\bar{m}$ and $B$, the number of bits packed into an agreed value, such that $s\ge\bar{m}\bar{n}B$. Increasing $B$ allows to reduce $\bar{m}$ and $\bar{n}$, i.e. the dimension of the LWE matrices, thus decreasing not only the computational cost, but also the bandwidth requirements of the algorithm.\\
 Consider the quantity $B$ and $\bar{B}=log_2[q]-B$. Two functions are defined starting from these two quantities: the \textit{rounding} function, as
 \begin{align*}
-\lfloor \cdot \rceil_{2^B} : \mathbf{Z}_q &\rightarrow [0,2^B-1] \\
+\lfloor \cdot \rceil_{2^B} : \mathbb{Z}_q &\rightarrow [0,2^B-1] \\
 v &\mapsto \lfloor 2^{-\bar{B}}v \rceil\text{ mod }2^B
 \end{align*}
 and the \textit{cross-rounding} function, as
 \begin{align*}
-\langle \cdot \rangle_{2^B} : \mathbf{Z}_q &\rightarrow \{0,1\}\\
+\langle \cdot \rangle_{2^B} : \mathbb{Z}_q &\rightarrow \{0,1\}\\
 v &\mapsto \lfloor 2^{-\bar{B}+1}v \rfloor\text{ mod }2
 \end{align*}
 Using these two functions, the \verb|rec| function can be defined as in \cite{peikert_2014}
 \begin{align*}
-\text{Rec} : \mathbf{Z}_q \times {0,1} &\rightarrow [0,2^B-1]\\
+\text{Rec} : \mathbb{Z}_q \times {0,1} &\rightarrow [0,2^B-1]\\
 (w,b) &\mapsto \lfloor v \rceil_{2^B}
 \end{align*}
 where $v$ is the closest vector to $w$ s.t. $\langle v \rangle_{2^B} = b$.\\
@@ -136,11 +149,11 @@ where $v$ is the closest vector to $w$ s.t. $\langle v \rangle_{2^B} = b$.\\
 
 \subsection{Error distributions}
 As mentioned above, the authors present four different easy to sample probability distribution that could be used instead of the rounded Gaussian. In order to achieve a reasonable degree of efficiency both in terms of computational cost of sampling, and of entropy required to generate the samples, the authors decide to use inverse sampling, using a pre-computed table for a cumulative density function, CDF from now on, carefully chosen to be as close as possible to a rounded Gaussian distribution\footnote{The authors use the notion of R\`enyi divergence to quantify closeness. More details in Section \ref{sec:fr:sec_analysis}}. We refer to \cite{frodo} for the exact tables proposed by the authors of Frodo.\\
-Let's examine the procedure for inverse sampling used in Frodo. For instance, take the first distribution\footnote{Called $D_1$ in the original paper.} proposed in \cite{frodo}. This distribution has CDF given by $T\text{ }=\text{ }[43,104,124,127]$. In order to inverse sample, generate an uniformly random value $y\in[0,127]$, i.e. seven random bits, and then return the smallest $\bar{x} \in [0,3]\text{ }s.t.\text{ }y\le T[\bar{x}]$. Such $\bar{x}$ can only be positive, while the rounded Gaussian also takes negative values. So, in order to "restore" the sign, an eight uniformly random bit is generated and used to choose $s\in{-1,1}$, thus generating the final value $x\text{ }=\text{ }s\bar{x}$.\\
+Let's examine the procedure for inverse sampling used in Frodo. For instance, take the first distribution\footnote{Called $D_1$ in the original paper.} proposed in \cite{frodo}. This distribution has CDF given by $T=[43,104,124,127]$. In order to inverse sample, generate an uniformly random value $y\in[0,127]$, i.e. seven random bits, and then return the smallest $\bar{x} \in [0,3]\text{ }s.t.\text{ }y\le T[\bar{x}]$. Such $\bar{x}$ can only be positive, while the rounded Gaussian also takes negative values. So, in order to "restore" the sign, an eighth uniformly random bit is generated and used to choose $s\in\{-1,1\}$, thus generating the final value $x=s\bar{x}$.\\
 In general, the construction of a table can be viewed as taking $2^{b-1}$ samples from a rounded Gaussian\footnote{This is just for reference, the CDF are usually hand crafted} and counting the occurrences of the different absolute values. The derived PDF is then converted into a CDF. Since the sign is ignored, the CDF does not resemble a rounded Gaussian anymore, but it is easy to restore the sign, with just an additional random bit, while this procedure allows for a more compact CDF, with only half the values. This procedure has a total requirement of $b$ bits of entropy, and it only costs a constant time table lookup, which runs in $\Theta(\#T)$, and the sign multiplication.\\ 
 
-\subsection{Generation of \textbf{a}}
-As mentioned above, a fresh matrix $\textbf{a} \in \mathbf{Z}^{n\times n}_q$ needs to be generated for each protocol instance. The approach followed in Frodo is similar to the one of New Hope. A small uniformly random seed is generated and shared between the parties\footnote{Remember that the parameter \textbf{a} is public}, who can generate the same \textbf{a} using it. Following the same reasoning of \cite{newhope}, the seed is expanded using a function that fits the random oracle model. In particular, the function used for the task is AES128 in ECB mode, using the seed as key and a known plaintext.\\
+\subsection{Generation of \textbf{a}}\label{sec:fr:a_generation}
+As mentioned above, a fresh matrix $\textbf{a} \in \mathbb{Z}^{n\times n}_q$ needs to be generated for each protocol instance. The approach followed in Frodo is similar to the one of New Hope. A small uniformly random seed is generated and shared between the parties\footnote{Remember that the parameter \textbf{a} is public}, who can generate the same \textbf{a} using it. Following the same reasoning of \cite{newhope}, the seed is expanded using a function that fits the random oracle model. In particular, the function used for the task is AES128 in ECB mode, using the seed as key and a known plaintext.\\
 The procedure starts from a "striped" matrix, $\bar{\textbf{a}}$, $s.t.$ 
 \begin{equation*}
 \bar{\textbf{a}}[i,j]=
@@ -227,11 +240,11 @@ It is worth pointing out that in the context of TLS the Server might want to cac
 \subsection{Protocol run}
 In protocol \ref{prot:frodo} we can see a run of Frodo, for a security level $s$, with public parameters $(n,q,\chi,\bar{n},\bar{m},B)$. For simplicity, the matrix \textbf{a} is generated with \verb|Gen| as described in Algorithm \ref{alg:fr:a_generate} and subsequently multiplied to create the public terms for the key exchange. It is then  easy to adapt the protocol to generate blocks of \textbf{a} on the fly when executing the matrix multiplication.\\
 
-\begin{protocol}{New Hope}{Alice [Server]}{Bob [Client]}\label{prot:frodo}
+\begin{protocol}{Frodo}{Alice [Server]}{Bob [Client]}\label{prot:frodo}
 $seed \xleftarrow{\$}U[\{0,1\}^s]$&\\
 $\textbf{a}\leftarrow$ \verb|Gen|$(seed)$ &\\
-$\textbf{s},\textbf{e}\xleftarrow{\$}\chi[\mathbf{Z}^{n\times\bar{n}}_q]$&$\textbf{s'},\textbf{e'}\xleftarrow{\$}\chi[\mathbf{Z}^{\bar{m}\times n_q}]$\\
-&$\textbf{e''}\xleftarrow{\$}\chi[\mathbf{Z}^{\bar{m}\times\bar{n}}_q]$\\
+$\textbf{s},\textbf{e}\xleftarrow{\$}\chi[\mathbb{Z}^{n\times\bar{n}}_q]$&$\textbf{s'},\textbf{e'}\xleftarrow{\$}\chi[\mathbb{Z}^{\bar{m}\times n_q}]$\\
+&$\textbf{e''}\xleftarrow{\$}\chi[\mathbb{Z}^{\bar{m}\times\bar{n}}_q]$\\
 $\textbf{b}\leftarrow\textbf{as}+\textbf{e}$&\\
 $(seed,\textbf{b})\rightarrow$&$\textbf{a}\leftarrow$ \verb|Gen|$(seed)$\\
 &$\textbf{u}\leftarrow\textbf{s'a}+\textbf{e'}$\\
