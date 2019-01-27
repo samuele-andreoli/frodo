@@ -1,1 +1,15 @@
+In this chapter, some of the previous works in lattice-based cryptography and other post-quantum schemes are presented, to provide both an overview of the process that lead to the creation of New Hope and Frodo, and to draw the bigger picture in which these two protocols are placed in the search for post-quantum secure cryptographic primitives.
+
+\section{The GGH cryptosystem}
+The very first proposal of a lattice based primitive, in particular a lattice based trapdoor one-way function, is the GGH proposal \cite{GGH}. It presents a public key cryptosystem based on lattice-based primitives and dates back to 1997.\\
+The private key for this cryptosystem is a basis $B$ for a lattice $\mathscr{L}$, consisting of short, almost orthogonal vectors, while the public key is a generic basis $H$ of the lattice, which can be efficiently computed from $B$. In principle, there is no constraint on $H$, but it is usually computed as the Hermit Normal Form of $B$, since it makes computations easier.\\
+Then, the trapdoor function itself is simply the addition of a short noise vector $\mathbf{r}$ to a vector $\mathbf{v}\in\mathscr{L}$, which encodes the message to transmit. The encoding is simply the multiplication of the message $m$ for the public key $H$. Recovering $\mathbf{r}$ from $\mathbf{r}+\mathbf{v}$ is an instance of the $\alpha$-BBH, which means that is computationally hard given a generic basis for the lattice, while it can be efficiently done, given the knowledge of the private key $B$.\\
+Moreover, recovering the basis $B$, or an equivalently short basis, is an instance of the SIVP, and so it is computationally hard as well.\\
+Although GGH is beautifully simple, it has quite a few drawbacks. Its security heavily relies on the choice of the private key $B$ and of the distribution of the noise $r$. Moreover, for attacks to be impractical, the dimension of the lattice must be quite high. This poses a huge problem for the practicality of this cryptosystem: because public keys are generic bases for the lattice $\mathscr{L}$, their dimension grows quadratically and they can not be efficiently compressed, making the memory requirements for the algorithm grow as $\Omega(n^2)$. This was the final nail in the coffin for the GGH cryptosystem, and started the search for trapdoor functions allowing a more compact representation.
+
+\section{The NTRU proposal}
+NTRU 
+
 \section{The BCNS proposal}
+
+\section{Non lattice-pased PQC}

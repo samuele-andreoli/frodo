@@ -1,6 +1,6 @@
 \section{New Hope}
 In the New Hope paper\cite{newhope}, the authors present some solutions to performance and security issues of the BCNS proposal \cite{BCNS} of an Unauthenticated Post Quantum Key Exchange suitable for use in the TLS cipher suite, deriving the New Hope protocol. \\
-As far as performance are concerned, the main improvements are a change in the error distribution, from Gaussian, to a much easier to sample Binomial, the use of a new lattice for error reconciliation, that allows for better error correction, and a drastic drop in the size of the modulus \textit{q}, and finally the use of an encoding for polynomials in the NTT\footnote{TODO Reference to the section with the NTT} domain, which allows to take advantage of the quasi linear product in the NTT domain, while skipping some of the NTT transforms that would usually be necessary.\\
+As far as performance are concerned, the main improvements are a change in the error distribution, from Gaussian, to a much easier to sample Binomial, the use of a new lattice for error reconciliation, that allows for better error correction, and a drastic drop in the size of the modulus \textit{q}, and finally the use of an encoding for polynomials in the NTT\footnote{More about this in Section \ref{sec:nh:ntt}} domain, which allows to take advantage of the quasi linear product in the NTT domain, while skipping some of the NTT transforms that would usually be necessary.\\
 As for security, the authors notice that fixing the parameter \textbf{a} creates an opportunity for an all-for-the-price-of-one attack, and advice to make it ephemeral in order to avoid such risk.\\
 Moreover, the authors present a comprehensive security analysis, assessing the security level of the protocol to be comfortably over 128 bit.\\
 Let's take the time to go through the proposed changes and examine each of them in detail.
@@ -14,51 +14,16 @@ Let $\xi$ be the rounded Gaussian distribution of parameter $\sigma = \sqrt{8}$,
 \end{theorem}
 
 \subsection{Recovery from errors}
-In R-LWE applications, usually, one bit of information is encoded in each of the polynomial coefficients. In the context of a key exchange, though, this translates to a message space larger than necessary. This is an opportunity to introduce redundancy in the transmitted message (i.e. the key), trying to increase error tolerance. The authors of New Hope provide a generalization of a bit encoding using two coefficients, presented in [TODO add citation], which allows to encode a bit in 4 coefficients, further increasing the error tolerance w.r.t to the previous method using two coefficients. It is worth pointing out that the encoding part is not really important as far as the New Hope protocol is concerned. Indeed, the polynomials are always created either as result of operations on other polynomials, or via sampling from some distribution. Decoding, on the other hand, is used to extract the bits of the pre-hash key from the polynomials $\textbf{v}$ and $\textbf{v'}$, and is thus a crucial step of the reconciliation procedure. In order to build this encoding, a polynomial $f(X) \in \mathscr{R} = \mathbb{Z}[X]/(X^n+1)$ has to be split in $n/4$ groups of $4$ coefficients. Then, bits need to be encoded into, and decoded from, groups of four coefficients.
+In R-LWE applications, usually, one bit of information is encoded in each of the polynomial coefficients. In the context of a key exchange, though, this translates to a message space larger than necessary. This is an opportunity to introduce redundancy in the transmitted message (i.e. the key), trying to increase error tolerance. The authors of New Hope provide a generalization of a bit encoding using two coefficients, presented in \cite{bit_encoding}, which allows to encode a bit in 4 coefficients, further increasing the error tolerance w.r.t to the previous method using two coefficients. It is worth pointing out that the encoding part is not really important as far as the New Hope protocol is concerned. Indeed, the polynomials are always created either as result of operations on other polynomials, or via sampling from some distribution. Decoding, on the other hand, is used to extract the bits of the pre-hash key from the polynomials $\textbf{v}$ and $\textbf{v'}$, and is thus a crucial step of the reconciliation procedure. In order to build this encoding, a polynomial $f(X) \in \mathscr{R} = \mathbb{Z}[X]/(X^n+1)$ has to be split in $n/4$ groups of $4$ coefficients. Then, bits need to be encoded into, and decoded from, groups of four coefficients.
 
 \subsubsection{Polynomial splitting}
 The first goal, i.e. the polynomial splitting, can be quite naturally accomplished observing that, given $\mathscr{S} = \mathbb{Z}[X]/(X^4+1)$, we can write $f(X) \in \mathscr{R}$ as $f(X) = f_0 + f_1X + \ldots + f_{1023}X^{1023} = f'_0(X^{256}) + \ldots + f'_{255}(X^{256})X^{255}$, where the $f'_i$ are elements of $\mathscr{S}$, thus identifying $f(X)$ with the vector $(f'_0,\ldots,f'_{255}) \in \mathscr{S}^{256}$. This means that each $f'_i$ is the polynomial of coefficients $f_i,f_{i+256},f_{i+512},f_{i+768}$, which can be identified with a vector in $\mathbb{Z}^4$.
 
 \subsubsection{Bit encoding}
 For the encoding, the authors propose to use the lattice $\tilde{D}_4 = \mathbb{Z}^4 \cup \mathbf{g} + \mathbb{Z}^4$, where \textbf{g} is the glue vector $(\frac{1}{2},\frac{1}{2},\frac{1}{2},\frac{1}{2})^t$, such lattice has Voronoi cell $\mathscr{V}$ with relevant vectors $(\pm1,0,0,0),(0,\pm1,0,0),(0,0,\pm1,0),(0,0,0,\pm1)$, said type-A, and $(\pm\frac{1}{2},\pm\frac{1}{2},\pm\frac{1}{2},\pm\frac{1}{2})$, said type-B, respectively 8 and 16 in number.\\
-The condition for a correct error recovery, given the cell $\mathscr{V}$, is that given the error vector $e$, then $e\in\mathscr{V}$. This condition can be rewritten as $\langle e,v \rangle \leq \frac{1}{2} \forall v $ relevant vectors. The distinction between the type-A and type-B can be used to cleverly regroup these equations, obtaining $\left\lVert e \right\rVert_{\infty} \leq \frac{1}{2}$ for type-A vectors, and $\left\lVert e \right\rVert_1 \leq 1$ for type-B vectors.\\
+The condition for a correct error recovery, given the cell $\mathscr{V}$, is that given the error vector $e$, then $e\in\mathscr{V}$. This condition can be rewritten as $\langle e,v \rangle \leq \frac{1}{2} \forall v $ relevant vectors. The distinction between the type-A and type-B can be used to cleverly regroup these equations, obtaining $\norm{e \right\rVert_{\infty} \leq \frac{1}{2}$ for type-A vectors, and $\left\lVert e}_1 \leq 1$ for type-B vectors.\\
 The last component for the encoding is a base for $\tilde{D}_4$. The authors of \cite{newhope} propose the base $\mathbf{B} = (\mathbf{u}_0,\mathbf{u}_1,\mathbf{u}_2,\mathbf{g})$. Although this might not seem the most natural choice, the presence of the glue vector gives an efficient algorithm for decoding over $\tilde{D}_4/\mathbb{Z}^4$.\\
 Indeed, considering that $\mathbf{u}_0,\mathbf{u}_1,\mathbf{u}_2,2\mathbf{g} \in \mathbb{Z}^4$, a vector in $\tilde{D}_4/\mathbb{Z}^4$ is given by the parity of its last coordinate. This means that the encoding of a bit $k\in\mathbb{Z}_2$ can be computed as in Algorithm \ref{alg:nh:encode}, as $k\mathbf{g}$. The decoding is described in Algorithm \ref{alg:nh:decode}, and it can be summed up as looking for the closest vector to the element $\mathbf{x}\in\tilde{D}_4$ to decode, between $\mathbf{0}$ and $\mathbf{g}$. It is easy to see that if $e\in\mathscr{V}$, then $\mathbf{x} + e$ will still be in the same Voronoi cell of $\mathbf{x}$.
-
-\subsubsection{Reconciliation}
-Finally, all of the ingredients for the reconciliation mechanism are in place. The closest vector any $\mathbf{x}\in\mathbb{R}$ can be computed using the $CVP_{\tilde{D}_4}$ algorithm, described in Algorithm \ref{alg:nh:CVP}, and with this the r-bit reconciliation function \verb|HelpRec| can be defined as 
-\begin{equation}
-CVP_{\tilde{D}_4}\left(\frac{2^r}{q}(\mathbf{x}+b\mathbf{g})\right) mod 2^r, where \xleftarrow{\$}U[\{0,1\}]
-\end{equation}
-Let's call $\mathbf{r}$ the output of the reconciliation function. The final extracted bits can then be computed as 
-\begin{equation}
-\verb|Decode|\left(\frac{1}{q}\mathbf{x}-\mathbf{Br}\right) 
-\end{equation}
-Applying this algorithm to the polynomial split computed above, the full key can be recovered.\\
-The vector $r$, output of the \verb|HelpRec| function, will then be transmitted to the other party, allowing it to apply the final reconciliation to its polynomial split, thus recovering the same key.
-
-\subsubsection{Failure rate}
-
-\subsection{Generation of \textbf{a}}\label{sec:nh:a_generation}
-The parameter \textbf{a} was made ephemeral, in order to avoid all-for-the-price-of-one attacks and parameter manipulation\footnote{For example, the parameter \textbf{a} can be trapdoored, as described in \cite{RLWE_trapdoor} and \cite{newhope}.}. Generating a fresh \textbf{a} for each run of the protocol, opens two problems. The generation of \textbf{a} is computationally somewhat costly, and the generated parameter has to be transmitted to the other party of the key exchange, posing a bandwidth problem.\\
-The former issue can be mitigated by caching the parameter \textbf{a} for multiple instances of the protocol, since it has only a marginal effect on the resilience against all-for-the-price-of-one attack. As we can see in Protocol \ref{prot:newhope}, this is quite useful for Alice, which is identified as the Server in a Client-Server connection, and could still be of some use to Bob, which is the Client.\\
-The latter is solved by generating the parameter \textbf{a} from a small random seed, using an extendable output cryptographic hash function, SHAKE-128\footnote{This is an extension of the SHA-3 cryptographic hash function \cite{SHA3_FIPS}}, to generate a sequence of pseudo-random bits, which are then parsed into the coefficients of the polynomial \textbf{a}, as described in Algorithm \ref{alg:nh:parse}. The generated \textbf{a} is considered to be in the NTT domain, so there is not need to apply the transform to it. This is a legitimate choice, because the NTT transform preserves uniform noise, so no bias is introduced in the coefficients of \textbf{a} by considering it already in the NTT domain.\\
-It's worth to point out that although \verb|Parse| rejects some of the material generated by SHAKE-128, the rejection rate is only $(2^{16}-1-5q)/(2^{16}-1) \approx 0.06$. Since \textbf{a} has $n=1024$ coefficients, and each of them is a 16 bit unsigned integer, SHAKE-128 needs to generate $\approx 2.2$ kbytes of output on average.
-\begin{b_algorithm}{Parse function}
-{S, a bit sequence, the output of SHAKE-128}
-{\textbf{a}, a polynomial, represented as an array of its coefficients}
-{alg:nh:parse}
-\STATE $i \gets 0$
-\STATE $c \gets 0$
-\WHILE{$i \le n$}
-    \STATE $Xi \gets (uint16)S[16*c .. 16*c+15]$
-    \STATE $c++$
-    \IF{$Xi \le 5*q$}
-        \STATE $\textbf{a}[i] \gets Xi$
-        \STATE $i++$
-    \ENDIF
-\ENDWHILE
-\end{b_algorithm}
 
 \begin{b_algorithm}{$CVP_{\tilde{D}_4}$}
 {$\textbf{x} \in \mathbf{R}^4$}
@@ -94,6 +59,42 @@ It's worth to point out that although \verb|Parse| rejects some of the material 
 \ENDIF
 \end{b_algorithm}
 
+\subsubsection{Reconciliation}
+Finally, all of the ingredients for the reconciliation mechanism are in place. The closest vector any $\mathbf{x}\in\mathbb{R}$ can be computed using the $CVP_{\tilde{D}_4}$ algorithm, described in Algorithm \ref{alg:nh:CVP}, and with this the r-bit reconciliation function \verb|HelpRec| can be defined as 
+\begin{equation}
+CVP_{\tilde{D}_4}\left(\frac{2^r}{q}(\mathbf{x}+b\mathbf{g})\right) mod 2^r, where \xleftarrow{\$}U[\{0,1\}]
+\end{equation}
+Let's call $\mathbf{r}$ the output of the reconciliation function. The final extracted bits can then be computed as 
+\begin{equation}
+\verb|Decode|\left(\frac{1}{q}\mathbf{x}-\mathbf{Br}\right) 
+\end{equation}
+Applying this algorithm to the polynomial split computed above, the full key can be recovered.\\
+The vector $r$, output of the \verb|HelpRec| function, will then be transmitted to the other party, allowing it to apply the final reconciliation to its polynomial split, thus recovering the same key.
+
+\subsubsection{Failure rate}
+%TODO
+
+\subsection{Generation of \textbf{a}}\label{sec:nh:a_generation}
+The parameter \textbf{a} was made ephemeral, in order to avoid all-for-the-price-of-one attacks and parameter manipulation\footnote{For example, the parameter \textbf{a} can be trapdoored, as described in \cite{RLWE_trapdoor} and \cite{newhope}}. Generating a fresh \textbf{a} for each run of the protocol, opens two problems. The generation of \textbf{a} is computationally somewhat costly, and the generated parameter has to be transmitted to the other party of the key exchange, posing a bandwidth problem.\\
+The former issue can be mitigated by caching the parameter \textbf{a} for multiple instances of the protocol, since it has only a marginal effect on the resilience against all-for-the-price-of-one attack. As we can see in Protocol \ref{prot:newhope}, this is quite useful for Alice, which is identified as the Server in a Client-Server connection, and could still be of some use to Bob, which is the Client.\\
+The latter is solved by generating the parameter \textbf{a} from a small random seed, using an extendable output cryptographic hash function, SHAKE-128\footnote{This is an extension of the SHA-3 cryptographic hash function \cite{SHA3_FIPS}}, to generate a sequence of pseudo-random bits, which are then parsed into the coefficients of the polynomial \textbf{a}, as described in Algorithm \ref{alg:nh:parse}. The generated \textbf{a} is considered to be in the NTT domain, so there is not need to apply the transform to it. This is a legitimate choice, because the NTT transform preserves uniform noise, so no bias is introduced in the coefficients of \textbf{a} by considering it already in the NTT domain.\\
+It's worth to point out that although \verb|Parse| rejects some of the material generated by SHAKE-128, the rejection rate is only $(2^{16}-1-5q)/(2^{16}-1) \approx 0.06$. Since \textbf{a} has $n=1024$ coefficients, and each of them is a 16 bit unsigned integer, SHAKE-128 needs to generate $\approx 2.2$ kbytes of output on average.
+\begin{b_algorithm}{Parse function}
+{S, a bit sequence, the output of SHAKE-128}
+{\textbf{a}, a polynomial, represented as an array of its coefficients}
+{alg:nh:parse}
+\STATE $i \gets 0$
+\STATE $c \gets 0$
+\WHILE{$i \le n$}
+    \STATE $Xi \gets (uint16)S[16*c .. 16*c+15]$
+    \STATE $c++$
+    \IF{$Xi \le 5*q$}
+        \STATE $\textbf{a}[i] \gets Xi$
+        \STATE $i++$
+    \ENDIF
+\ENDWHILE
+\end{b_algorithm}
+
 \subsubsection{NTT and message encoding}\label{sec:nh:ntt}
 As mentioned above, 
 
@@ -114,14 +115,16 @@ $\mu\leftarrow$\verb|SHA3-256|$(\nu)$&$\mu\leftarrow$\verb|SHA3-256|$(\nu)$\\
 \end{protocol}
 
 \subsection{Security analysis}
-
+% TODO
 
 \section{Going back to LWE}
-%                 Motivo del "ritorno" al LWE
-
+As mentioned before, R-LWE was welcomed as a way to mitigate many of the shortcomings of cyrptographic primitives based on the generic LWE problem, namely the memory required to store protocol parameters and private keys, and the bandwidth necessary to transmit said parameters and the public keys, especially when a fresh parameter \textbf{a} is generated for each instance of the protocol.\\
+On the other hand, the additional structure in ideal lattices, provided by the ring, may enable attacks not viable in the context of generic lattices. Some attacks that exploit the ring structure already exist, although they are limited to some parameter choices, and only shave a few bits off the total security provided by the RLWE problem\footnote{A quite comprehensive recap of attacks on the LWE and RLWE problem can be found in \cite{RLWE_attacks}}. Still, the lack of practical attacks exploiting the ring structure in a catastrophic way should not put our minds to rest, as the cryptanalysis on the LWE and RLWE problems is still in its early stages.\\
+Only one thing is certain, the RLWE problem is a subcase of the LWE problem, which means that any effective attack against the LWE would also apply to RLWE based cryptographic primitives. The converse is not certain, as any attack on RLWE exploiting the ring structure would fail against LWE base primitives. This is a strong guarantee on the relative security of the two problems, regardless of the available attacks.\\
+Nevertheless, the huge performance penalty of LWE primitives has led to an abandonment of this problem, in favour of cheaper RLWE based primitives. Althoguh this led to a sprawl of new protocols, such an abandoment meant that the true potentialities of the LWE problem were not fully explored. This is where the authors of Frodo \cite{frodo} come into play, presenting a viable protocol using LWE primitives and showing that the performance advantages given by the RLWE setting are quite consistent, but not without remedy. 
 
 \section{Frodo}\label{sec:fr}
-The authors of Frodo \cite{frodo} restart from the BCNS proposal \cite{BCNS}, using a more general LWE setting, instead of the R-LWE used in the original paper. Then, as in the New Hope paper, they propose improvements to the protocol, to make it viable for use in the TLS cipher suite.\\
+The authors of Frodo \cite{frodo} take off from the BCNS proposal \cite{BCNS}, using a more general LWE setting, instead of the R-LWE used in the original paper. Then, as in the New Hope paper, they propose improvements to the protocol, to make it viable for use in the TLS cipher suite.\\
 Since the same security issues pointed out in \cite{newhope} are still valid in the LWE setting, the authors of Frodo are forced to make the parameter \textbf{a} ephemeral, which has an even bigger cost than in the R-LWE setting, both in terms of bandwidth and computational cost. As in New Hope, the first issue is solved using a small seed to generate the parameter \textbf{a}, but the size of this parameter in the setting of LWE can still be an issue for more restricted environments, so the authors of Frodo decided to use a generation function that allows for generation of small blocks of \textbf{a}, which can be used and then discarded if caching them in memory is too burdensome. Even after the optimization, the generation process is remarkably costly, taking up to 40\% of the time necessary. Following the same reasoning of Section \ref{sec:nh:a_generation}, caching might be a partial mitigation for this burden.\\
 Moreover, the authors present four different easy to sample noise distributions which might be used in place of the rounded Gaussian distribution used in \cite{BCNS}.
 
@@ -143,7 +146,7 @@ Using these two functions, the \verb|rec| function can be defined as in \cite{pe
 (w,b) &\mapsto \lfloor v \rceil_{2^B}
 \end{align*}
 where $v$ is the closest vector to $w$ s.t. $\langle v \rangle_{2^B} = b$.\\
-%%                         _                                                           _
+%%                      _                                                          _
 %% Claims v u.r => |_ v  | | <v> u.r. and |v-w| < 2^\bar{B}-2 => Rec(w,<v>) = |_ v  |
 %% Still undecided if I should put them here or in the security/correctness analysis
 
@@ -255,7 +258,3 @@ $\nu\leftarrow$\verb|Rec|$(\textbf{v'},\textbf{r})$&$\nu\leftarrow\lfloor\textbf
 \end{protocol}
 
 \subsection{Security Analysis}\label{sec:fr:sec_analysis}
-
-%                 Protocollo
-
-%                 Problemi risolti e ottimizzazioni

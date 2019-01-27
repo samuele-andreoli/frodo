@@ -37,7 +37,7 @@
 
 %% Custom styles
 \usepackage{styles/protocol}
-\usepackage{styles/boxed_algorithms}
+\usepackage{styles/algorithms}
 
 %% Graphic settings 
 \renewcommand{\ttdefault}{pcr}
@@ -48,7 +48,9 @@
 }
 
 %% Initialize environments
-\newtheorem{theorem}{Theorem}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
 
 %% Initialize indexing
 \makeindex

@@ -1,6 +1,6 @@
 \usepackage{amsmath}
 
-%% Protocol environment %%
+%% Boxed algorithm environment %%
 % Implements its own counter
 %
 % Usage:
@@ -29,4 +29,11 @@
 \hline
 \end{tabular}
 \end{table}
+}
+
+% Helpers for math primitives
+
+% Norm that adapts to symbols
+\newcommand{\norm}[1]{
+	\left\lVert #1 \right\rVert
 }
