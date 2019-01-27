@@ -96,7 +96,7 @@ It's worth to point out that although \verb|Parse| rejects some of the material 
 \end{b_algorithm}
 
 \subsubsection{NTT and message encoding}\label{sec:nh:ntt}
-As mentioned above, 
+In Section \ref{sec:bg:ntt}
 
 \subsection{Protocol run}
 In Protocol \ref{prot:newhope} we can see the end result of the proposed improvements: the New Hope protocol for a 128 bit security level, with public parameters $p=12289$, the modulus, and $n=1024$, the degree of the polynomials.\\
@@ -118,10 +118,10 @@ $\mu\leftarrow$\verb|SHA3-256|$(\nu)$&$\mu\leftarrow$\verb|SHA3-256|$(\nu)$\\
 % TODO
 
 \section{Going back to LWE}
-As mentioned before, R-LWE was welcomed as a way to mitigate many of the shortcomings of cyrptographic primitives based on the generic LWE problem, namely the memory required to store protocol parameters and private keys, and the bandwidth necessary to transmit said parameters and the public keys, especially when a fresh parameter \textbf{a} is generated for each instance of the protocol.\\
+As mentioned before, R-LWE was welcomed as a way to mitigate many of the shortcomings of cryptographic primitives based on the generic LWE problem, namely the memory required to store protocol parameters and private keys, and the bandwidth necessary to transmit said parameters and the public keys, especially when a fresh parameter \textbf{a} is generated for each instance of the protocol.\\
 On the other hand, the additional structure in ideal lattices, provided by the ring, may enable attacks not viable in the context of generic lattices. Some attacks that exploit the ring structure already exist, although they are limited to some parameter choices, and only shave a few bits off the total security provided by the RLWE problem\footnote{A quite comprehensive recap of attacks on the LWE and RLWE problem can be found in \cite{RLWE_attacks}}. Still, the lack of practical attacks exploiting the ring structure in a catastrophic way should not put our minds to rest, as the cryptanalysis on the LWE and RLWE problems is still in its early stages.\\
 Only one thing is certain, the RLWE problem is a subcase of the LWE problem, which means that any effective attack against the LWE would also apply to RLWE based cryptographic primitives. The converse is not certain, as any attack on RLWE exploiting the ring structure would fail against LWE base primitives. This is a strong guarantee on the relative security of the two problems, regardless of the available attacks.\\
-Nevertheless, the huge performance penalty of LWE primitives has led to an abandonment of this problem, in favour of cheaper RLWE based primitives. Althoguh this led to a sprawl of new protocols, such an abandoment meant that the true potentialities of the LWE problem were not fully explored. This is where the authors of Frodo \cite{frodo} come into play, presenting a viable protocol using LWE primitives and showing that the performance advantages given by the RLWE setting are quite consistent, but not without remedy. 
+Nevertheless, the huge performance penalty of LWE primitives has led to an abandonment of this problem, in favor of cheaper RLWE based primitives. Although this led to a sprawl of new protocols, such an abandonment meant that the true potentialities of the LWE problem were not fully explored. This is where the authors of Frodo \cite{frodo} come into play, presenting a viable protocol using LWE primitives and showing that the performance advantages given by the RLWE setting are quite consistent, but not without remedy. 
 
 \section{Frodo}\label{sec:fr}
 The authors of Frodo \cite{frodo} take off from the BCNS proposal \cite{BCNS}, using a more general LWE setting, instead of the R-LWE used in the original paper. Then, as in the New Hope paper, they propose improvements to the protocol, to make it viable for use in the TLS cipher suite.\\

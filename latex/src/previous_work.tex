@@ -8,8 +8,9 @@ Moreover, recovering the basis $B$, or an equivalently short basis, is an instan
 Although GGH is beautifully simple, it has quite a few drawbacks. Its security heavily relies on the choice of the private key $B$ and of the distribution of the noise $r$. Moreover, for attacks to be impractical, the dimension of the lattice must be quite high. This poses a huge problem for the practicality of this cryptosystem: because public keys are generic bases for the lattice $\mathscr{L}$, their dimension grows quadratically and they can not be efficiently compressed, making the memory requirements for the algorithm grow as $\Omega(n^2)$. This was the final nail in the coffin for the GGH cryptosystem, and started the search for trapdoor functions allowing a more compact representation.
 
 \section{The NTRU proposal}
-NTRU 
+NTRU was first presented in 1998 by Hoffstein, Pipher and Silverman in \cite{NTRU}, but the cryptosystem has since undergone some modifications to improve efficiency and mitigate security concerns. In order to give an up-to-date definition of the cryptosystem, while still remaining somewhat faithful to the original definition, the formulation given by Micciancio and Regev in \cite{PQC} is a good compromise.\\
+
 
 \section{The BCNS proposal}
 
-\section{Non lattice-pased PQC}
+\section{Non lattice-based PQC}
