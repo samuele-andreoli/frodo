@@ -1,4 +1,4 @@
-\documentclass[a4paper]{book}
+\documentclass[12pt,a4paper,twoside]{styles/Phd_1}
 
 %% Common styles
 \usepackage{graphicx}
@@ -36,6 +36,11 @@
     urlcolor=blue
 }
 
+% Packages for template
+\usepackage{makeidx,shortvrb,latexsym}
+\usepackage{fancyhdr}
+\usepackage{indentfirst}
+
 %% Custom styles
 \usepackage{styles/protocol}
 \usepackage{styles/algorithms}
@@ -44,38 +49,57 @@
 \renewcommand{\ttdefault}{pcr}
 
 %% Assets directories
-\graphicspath{
-{./assets/}
-}
-
-%% Initialize environments
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{definition}{Definition}[section]
-\newtheorem{remark}{Remark}[section]
+\graphicspath{{./assets/}}
 
 %% Initialize indexing
 \makeindex
-\pagenumbering{roman}
 
+\let\origdoublepage\cleardoublepage
+\newcommand{\clearemptydoublepage}{%
+\clearpage
+{\pagestyle{empty}\origdoublepage}%
+}
+\let\cleardoublepage\clearemptydoublepage
+
+\tracingmacros=1
 \begin{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Begin template - Emmanuela Orsini 21/V/2007
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Before indexing %%%
 
 %% Title page
-\begin{titlepage}
-\begin{center}
-Master Thesis \\
-Samuele Andreoli \\  
-\end{center}
-\end{titlepage}
+\university{Universit\`{a} degli Studi di Trento}
+\dept{Dipartimento di Matematica}
+\Logo{logo.eps}
+\title{Practical implementations of Lattice Based protocols}
+\author{Samuele Andreoli}
+
+\twosupervisors
+\supervisor{Prof. Massimiliano Sala}
+\firstreader{Alessio Meneghetti}
+
+\secondreader{Prof. X}
+\accademico{Anno accademico $2018/2019$}
+
+\frontespizio     %questo e' il frontespizio esterno, cioe' senza firme
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\signaturepage     %questo e' il frontesizio interno con le firme
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\cleardoublepage
+\cleardoublepage \setcounter{page}{1} \pagenumbering{roman}
+\pagestyle{plain} \tableofcontents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End template
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Introduction %%
 \pagenumbering{roman}
+\addcontentsline{toc}{chapter}{Introduction}
 \chapter*{Introduction}\label{ch:introduction}
 \input{src/introduction.tex}
-
-%% Index %%
-\tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Start indexing %%%
@@ -98,12 +122,14 @@ Samuele Andreoli \\
 \input{src/implementation.tex}
 
 %% Conclusion %%
+\addcontentsline{toc}{chapter}{Conclusions}
 \chapter*{Conclusions}\label{ch:conclusions}
 \input{src/conclusions.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Bibliography %%
+\addcontentsline{toc}{chapter}{Bibliography}
 \bibliography{master_thesis.bib}{}
-\bibliographystyle{alpha}
 
 \end{document}
+\tracingmacros=0
