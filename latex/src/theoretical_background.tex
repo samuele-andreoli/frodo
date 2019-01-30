@@ -129,7 +129,7 @@ The dimension of the lattice, as well as its rank is equal to $deg(f)=n$
 \end{definition}
 
 This definition already hints at the biggest advantage of ideal lattices. Indeed, the polynomial $f$ is enough to identify the lattice $\mathscr{L}=\mathbb{Z}[x]/(f)$. Then, while generic lattices require $n^2$ elements of a matrix for a complete representation, all that is required in the case of ideal lattices are the $n$\\
-On the other hand, the elements of an ideal lattice are polynomials themselves
+On the other hand, the elements of an ideal lattice are polynomials themselves, which means that 
 %TODO Body
 
 Still, operation in this kind of lattices requires a lot of polynomial multiplications, which are not exactly a fast operation if performed naively. Luckily, for lattices on $\mathbb{Z}_q^n$, it is possible to speed up these operations using the Number Theoretical Transform, which allows to convert polynomial multiplication in simple component-wise multiplications between arrays. This will be explored in detail is Section \ref{sec:bg:ntt}.
@@ -137,9 +137,59 @@ Still, operation in this kind of lattices requires a lot of polynomial multiplic
 \section{Noise Distributions}
 Lattice based cryptography schemes heavily rely on short random vector, typically sampled from a Discrete Gaussian distribution, used to perturb lattice elements. This section introduces a few relevant concepts on this topic.\\
 
-\begin{definition}[Discrete Gaussian Distribution]
-
+\begin{definition}[Gaussian Measure]
+Consider $\mathbf{x},\mathbf{c}\in\mathbb{R}^n$, and $s>0$. The Gaussian measure is defined as
+\begin{equation*}
+\rho_{s,\mathbf{c}}(\mathbf{x}) = exp\left[\frac{-\pi\norm{\mathbf{x}-\mathbf{c}}^2}{s^2}\right]
+\end{equation*}
 \end{definition}
+
+The total measure associated to $\rho_{s,\mathbf{c}}$ can be computed as $\int_{\mathbf{x}\in\mathbb{R}^n}\rho_{s,\mathbf{c}}(\mathbf{x})d\mathbf{x}$ $=$ $s^n$. The, the continuous Gaussian distribution of parameter $s$ and centered in $\mathbf{c}$ can be defined as follows.
+
+\begin{definition}[Gaussian Distribution]
+Consider $\mathbf{x},\mathbf{c}\in\mathbb{R}^n$, and $s>0$. The continuous Gaussian distribution is defined as
+\begin{equation*}
+D_{s,\mathbf{c}}(\mathbf{x})=\frac{\rho_{s,\mathbf{c}}(\mathbf{x})}{s^n}
+\end{equation*}
+\end{definition}
+
+This distribution would already be sufficient to sample noise efficiently, as it is easy to see that it is the sum of $n$ orthogonal one dimensional Gaussian distributions, which means that it can be approximated with arbitrary precision using known techniques. However, it is worth to spend a little effort to define a discrete counterpart, which can be more efficiently sampled when only a finite precision is available. The first step required to reach this goal is to define the Gaussian mass of a lattice $\mathscr{L}$.
+
+\begin{definition}
+Let $\mathscr{L}$ be a lattice, $\mathbf{c}\in\mathbb{R}^n$ and consider $s>0$. The Gaussian mass of $\mathscr{L}$ is defined as
+\begin{equation*}
+R_{s,\mathbf{c}}(\mathscr{L})=\sum_{\mathbf{y}\in\mathscr{L}}\rho_s(\mathbf{y})
+\end{equation*}
+where $\mathbf{y}\in\mathscr{L}$
+\end{definition}
+
+Using the concepts of Gaussian mass and Gaussian measure, the discrete Gaussian distribution $D_{\mathscr{L},s}$ can be formulated as follows.
+
+\begin{definition}[Discrete Gaussian Distribution]
+Let $\mathscr{L}$ be a lattice, $\mathbf{c}\in\mathbb{R}^n$ and consider $s>0$. The Discrete Gaussian Distribution of parameter $s$ and center $\mathbf{c}$ over $\mathscr{L}$ is the distribution induced by the measure
+\begin{equation*}
+\mathbb{D_{s,\mathbf{c},\mathscr{L}}}(\mathbf{x})= \frac{\rho_{s,\mathbf{c}}(\mathbf{x})}{R_{s,\mathbf{c}}(\mathscr{L}}
+\end{equation*}
+\end{definition}
+
+\begin{remark}
+Although the discrete Gaussian Distribution behaves differently from the continuous one, it can be proved that for a large enough $s$, they start behaving similarly. How big $s$ needs to be is determined by the smoothing parameter of a lattice.
+\end{remark}
+
+\begin{definition}[Smoothing parameter]
+Let $\mathscr{L}$ be a lattice and consider $\epsilon>0$, the smoothing parameter $\eta_\epsilon(\mathscr{L})$ is defined as the smallest $s$, $s.t.$ $\rho_{s^-1}(\mathscr{L}^*\backslash\{0\})<\epsilon$
+\end{definition}
+
+Unfortunately, computing the smoothing parameter of a lattice is often impractical. However, for application purposes, having a higher bound of the smoothing parameter is enough.
+
+\begin{theorem}
+Let $\mathscr{L}$ be a lattice, and take $\epsilon=2^{-n}$. It holds
+\begin{equation*}
+\eta_\epsilon(\mathscr{L})\leq\frac{\sqrt{n}}{\lambda\left(\mathscr{L}\right)}
+\end{equation*}
+\end{theorem}
+
+Although both tighter and more general bounds are known on the smoothing parameters, this bound is more than adequate to use when choosing the parameters of a lattice based cryptosystem. Indeed, it is the most widespread in literature, and it is used by the authors of all the cyrptosystems presented in this work when justifying their parameter choice.
 
 \section{NTT}\label{sec:bg:ntt}
 
@@ -334,7 +384,7 @@ r &&& \\
 then, the first component of $\mathbf{s}$ is guessed as $k\in\mathbb{Z}_q$. Finally, the guess is used to compute $\mathbf{b}'=\mathbf{b}+\left(\frac{rk}{q}\right)_{i=0}^{n-1}$. Feeding the instance $(B',b')$ in the decisional solver, it can be verified if $k$ is the correct guess for the first component of $\mathbf{s}$. This will be accomplished in at most $q$ attempts, and repeating the procedure for each component of $\mathbf{s}$, the complete vector can be recovered in at most $nq$ steps.
 \end{proof}
 
-%                 Algoritmi (fft, fast decoding)
+%      TODO?           Algoritmi (fft, fast decoding)
 
 \subsection{Drawbacks}
 At the beginning of this section, it was mentioned how the LWE allows to shift the focus of the problem from the lattice itself, to its elements. Although this is a step in the good direction, a basis of the lattice is still required to carry out computations, which means that it must be somehow stored, leaving the elements required for the representation of the problem at $O(n^2)$. Even worse: if the parameters are not fixed, for instance to avoid all-for-the-price-of-one attacks, the lattice basis will have to be transmitted anyway, leaving the situation unchanged with respect to the first, simpler problems.\\
@@ -351,7 +401,6 @@ Luckily, there are some mitigations to these problems, which still allow to crea
 
 %         Prova di sicurezza [pqc, RLWE_security]
 
-%                 Presentazione di SVP e SIS
 %                 Riduzione di SVP e SIS a RLWE e LWE 
 %                 [RLWE_security per SVP -> search-RLWE -> decisional RLWE]
 %                 [SVP -> BDD -> LWE]
