@@ -1,6 +1,6 @@
 \section{Lattices}
 
-The starting point for lattice based cryptography are, quite evidently, lattices. The first part of this chapter focuses on giving an adequate background on lattices. For the sake of brevity and clarity, the following sections will focus on lattices on $\mathbb{R}^n$. Although lattices can potentially be defined using any vector space, this would overburden this introductory chapter with unnecessary notation, distracting the reader from the concepts necessary for building lattice based cryptographic primitives.
+The starting point for lattice based cryptography is, quite evidently, lattices. The first part of this chapter focuses on giving an adequate background on lattices. For the sake of brevity and clarity, the following sections will focus on lattices on $\mathbb{R}^n$. Although lattices can potentially be defined using any vector space, this would overburden this introductory chapter with unnecessary notation, distracting the reader from the concepts necessary for building lattice based cryptographic primitives.
 
 \subsection{Generic Lattices}\label{sec:bg:g_lattice}
 
@@ -105,34 +105,42 @@ The geometry of the Voronoi cell depends on the metric used over $\mathbb{R}^n$.
 \end{remark}
 
 The concept of Voronoi cell is especially important for lattice based cryptography. The nature of this importance will be discussed in more detail later.\\
-All of these definitions apply to generic lattices, but there are two subclasses of lattices that are of particular interest for lattice based cryptography: $q$-ary lattices and ideal lattices. While the former can be quickly introduced, the latter require a section of their own.
+All of these definitions apply to generic lattices, but there are some subclasses of lattices that are of particular interest for lattice based cryptography. Let's explore some of them, which will become relevant in the applications.
 
 \begin{definition}
 Let $\mathscr{L}\subset\mathbb{Z}^n$ be a lattice. $\mathscr{L}$ is said $q$-ary for some $q\in\mathbb{Z}^n$, if $q\mathbb{Z}\subset\mathscr{L}$.
 \end{definition} 
 
 \begin{remark}
-If $\mathscr{L}$ is a $q$-ary lattices, and $\mathbf{x}\in\mathscr{L}$ a vector, then $x+q\mathbb{Z}^n\in\mathscr{L}$, since $q\mathbb{Z}\subset\mathscr{L}$ and $\mathscr{L}$ is an additive group, but this means that $\forall\mathbf{x}\in\mathbb{Z}^n, \mathbf{x}\in\mathscr{L}\Leftrightarrow\mathbf{x}$ $mod$ $q\in\mathscr{L}$
+If $\mathscr{L}$ is a $q$-ary lattices, and $\mathbf{x}\in\mathscr{L}$ a vector, then $x+q\mathbb{Z}^n\in\mathscr{L}$, since $q\mathbb{Z}\subset\mathscr{L}$ and $\mathscr{L}$ is an additive group, but this means that $\forall\mathbf{x}\in\mathbb{Z}^n, \mathbf{x}\in\mathscr{L}\Leftrightarrow\mathbf{x}$ $mod$ $q\in\mathscr{L}$.
 \end{remark}
+
+This family of lattices is quite important in applications, where there is the need to deal with finite precision, making lattices over $\mathbb{Z}^n$ quite difficult to manage. With $q$-ary lattices it is possible to reduce the problem of lattice membership of $\mathbf{x}\in\mathbb{Z}^n$ to the much easier and compact problem of lattice membership of $\mathbf{x}$ $mod$ $q$.\\
+The other families of lattices fall in some way or another under the polyhedric family that is the one of Ideal Lattices, which really deserves its own section for the importance it has in applications.
 
 \subsection{Ideal Lattices}\label{sec:bg:ideal}
 
 Following the same spirit of the premise made at the beginning of the chapter, the definition and properties of Ideal Lattices will not be enunciated in general terms, but they will be restricted to the cases relevant in the construction of lattice based primitives. This section follows the approach to ideal lattices adopted in \cite{ideal_lattices}, adapting it to the more restrictive setting.
 
-\begin{definition}[Cyclotomic Polynomial]
-Let 
-\end{definition}
-
 \begin{definition}[Ideal Lattice]
-$\mathscr{L}$ is said to be an Ideal Lattice, if it is an ideal of a ring of the form $\mathbb{Z}[x]/(f)$, where f is an irreducible polynomial.\\
-The dimension of the lattice, as well as its rank is equal to $deg(f)=n$
+$\mathscr{L}$ is said to be an Ideal Lattice, if it is an ideal of a ring of the form $\mathbb{Z}[x]/(f)$, where $f\in\mathbb{Z}[x]$.\\
 \end{definition}
 
-This definition already hints at the biggest advantage of ideal lattices. Indeed, the polynomial $f$ is enough to identify the lattice $\mathscr{L}=\mathbb{Z}[x]/(f)$. Then, while generic lattices require $n^2$ elements of a matrix for a complete representation, all that is required in the case of ideal lattices are the $n$\\
-On the other hand, the elements of an ideal lattice are polynomials themselves, which means that 
+This definition already hints at the biggest advantage of ideal lattices. Indeed, the polynomial $f$ is enough to identify the lattice $\mathscr{L}=\mathbb{Z}[x]/(f)$. Then, while generic lattices require $n^2$ elements of a matrix for a complete representation, all that is required in the case of ideal lattices are the coefficients of $f$\\
+
+\begin{definition}[Cyclic Lattice]
+$\mathscr{L}$ is said to be a Cyclic Lattice, if it is an ideal of a ring of the form $\mathbb{Z}[x]/(x^n-1)$, where $f\in\mathbb{Z}[x]$ is a monic polynomial.\\
+\end{definition}
+
+It is possible to give an alternative formulation for ideal lattices, as presented in \cite{PQC}, which makes their geometry more intuitive and explains how they relate to general lattices.
+
+% TODO alternative
+\begin{definition}[Modular Convolutional Lattices]
+
+\end{definition}
 %TODO Body
 
-Still, operation in this kind of lattices requires a lot of polynomial multiplications, which are not exactly a fast operation if performed naively. Luckily, for lattices on $\mathbb{Z}_q^n$, it is possible to speed up these operations using the Number Theoretical Transform, which allows to convert polynomial multiplication in simple component-wise multiplications between arrays. This will be explored in detail is Section \ref{sec:bg:ntt}.
+Still, operations in this kind of lattices require a lot of polynomial multiplications, which are not exactly a fast operation if performed naively. Luckily, for lattices on $\mathbb{Z}_q^n$, it is possible to speed up these operations using the Number Theoretical Transform, which allows to convert polynomial multiplication in simple component-wise multiplications between arrays. This will be explored in detail is Section \ref{sec:bg:ntt}. The final cost of 
 
 \section{Noise Distributions}
 Lattice based cryptography schemes heavily rely on short random vector, typically sampled from a Discrete Gaussian distribution, used to perturb lattice elements. This section introduces a few relevant concepts on this topic.\\
@@ -189,7 +197,7 @@ Let $\mathscr{L}$ be a lattice, and take $\epsilon=2^{-n}$. It holds
 \end{equation*}
 \end{theorem}
 
-Although both tighter and more general bounds are known on the smoothing parameters, this bound is more than adequate to use when choosing the parameters of a lattice based cryptosystem. Indeed, it is the most widespread in literature, and it is used by the authors of all the cyrptosystems presented in this work when justifying their parameter choice.
+Although both tighter and more general bounds are known on the smoothing parameters, this bound is more than adequate to use when choosing the parameters of a lattice based cryptosystem. Indeed, it is the most widespread in literature, and it is used by the authors of all the cryptosystems presented in this work when justifying their parameter choice.
 
 \section{NTT}\label{sec:bg:ntt}
 
@@ -258,7 +266,7 @@ This is already a step in the good direction, as it is already possible to compu
 \begin{definition}[Negative Wrapped Convolution]
 Let $\mathbf{x},\mathbf{y}\in\mathbb{Z}_q^n$, $q$ prime, and $\psi$ a $2n$-th root of unity. Then, the negative wrapped convolution of $\mathbf{x}$ and $\mathbf{x}$ is defined as
 \begin{equation*}
-\mathbf{x}\circledast\mathbf{y} = (\psi^{-i})_{i=0}^{n-1}\circ NTT^{-1}(NTT(\mathbf{x})NTT(\mathbf{y}))
+\mathbf{x}\circledast\mathbf{y} = (\psi^{-i})_{i=0}^{n-1}\circ NTT^{-1}(NTT(\mathbf{x})\circ NTT(\mathbf{y}))
 \end{equation*}
 \end{definition}
 
@@ -391,6 +399,7 @@ At the beginning of this section, it was mentioned how the LWE allows to shift t
 Luckily, there are some mitigations to these problems, which still allow to create practical primitives using the LWE problem, but the very existence of these issues lead to the search of a new problem that didn't have them to begin with. In the end, the most promising candidate was identified in the RLWE problem.
 
 \section{The RLWE problem}
+% TODO
 %         Problema dell'RLWE [RLWE_security, RLWE_toolkit]
 
 %                 Presentazione del problema dell'RLWE

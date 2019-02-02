@@ -78,7 +78,7 @@ void FRODO_reconcilitaion_with_hint(uint8_t key[FRODO_KEY_LENGTH], uint8_t hint[
 {
    for (int i = 0, j = 0; i < FRODO_BAR_N * FRODO_BAR_N ; j++)
    {
-      for(int k = 0; k < 8/FRODO_BITRATE; k++)
+      for(int k = 0; k < 8; k+=FRODO_BITRATE)
       {
          key[j] <<= FRODO_BITRATE;
          key[j] |= PACK_KEY((V[i] + bitrate_rounder + HINT_BIAS(V[i], HINT_BIT(hint, i))));

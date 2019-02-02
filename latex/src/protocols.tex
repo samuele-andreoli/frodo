@@ -1,3 +1,5 @@
+In this chapter are presented the two main PQKE topic of this dissertation, New Hope, presented in \cite{newhope} by Alkim, Ducas, P{\"o}ppelmann and Schwabe, and Frodo, presented in \cite{frodo} by Bos, Costello, Ducas, Mironov, Naehrig, Nikolaenko, Raghunathan and Stebila with some consideration on their practicality.
+
 \section{New Hope}
 In the New Hope paper\cite{newhope}, the authors present some solutions to performance and security issues of the BCNS proposal \cite{BCNS} of an Unauthenticated Post Quantum Key Exchange suitable for use in the TLS cipher suite, deriving the New Hope protocol. \\
 As far as performance are concerned, the main improvements are a change in the error distribution, from Gaussian, to a much easier to sample Binomial, the use of a new lattice for error reconciliation, that allows for better error correction, and a drastic drop in the size of the modulus \textit{q}, and finally the use of an encoding for polynomials in the NTT\footnote{More about this in Section \ref{sec:nh:ntt}} domain, which allows to take advantage of the quasi linear product in the NTT domain, while skipping some of the NTT transforms that would usually be necessary.\\
@@ -14,7 +16,7 @@ Let $\xi$ be the rounded Gaussian distribution of parameter $\sigma = \sqrt{8}$,
 \end{theorem}
 
 \subsection{Recovery from errors}
-In R-LWE applications, usually, one bit of information is encoded in each of the polynomial coefficients. In the context of a key exchange, though, this translates to a message space larger than necessary. This is an opportunity to introduce redundancy in the transmitted message (i.e. the key), trying to increase error tolerance. The authors of New Hope provide a generalization of a bit encoding using two coefficients, presented in \cite{bit_encoding}, which allows to encode a bit in 4 coefficients, further increasing the error tolerance w.r.t to the previous method using two coefficients. It is worth pointing out that the encoding part is not really important as far as the New Hope protocol is concerned. Indeed, the polynomials are always created either as result of operations on other polynomials, or via sampling from some distribution. Decoding, on the other hand, is used to extract the bits of the pre-hash key from the polynomials $\textbf{v}$ and $\textbf{v'}$, and is thus a crucial step of the reconciliation procedure. In order to build this encoding, a polynomial $f(X) \in \mathscr{R} = \mathbb{Z}[X]/(X^n+1)$ has to be split in $n/4$ groups of $4$ coefficients. Then, bits need to be encoded into, and decoded from, groups of four coefficients.
+In RLWE applications, usually, one bit of information is encoded in each of the polynomial coefficients. In the context of a key exchange, though, this translates to a message space larger than necessary. This is an opportunity to introduce redundancy in the transmitted message (i.e. the key), trying to increase error tolerance. The authors of New Hope provide a generalization of a bit encoding using two coefficients, presented in \cite{bit_encoding}, which allows to encode a bit in 4 coefficients, further increasing the error tolerance w.r.t to the previous method using two coefficients. It is worth pointing out that the encoding part is not really important as far as the New Hope protocol is concerned. Indeed, the polynomials are always created either as result of operations on other polynomials, or via sampling from some distribution. Decoding, on the other hand, is used to extract the bits of the pre-hash key from the polynomials $\textbf{v}$ and $\textbf{v'}$, and is thus a crucial step of the reconciliation procedure. In order to build this encoding, a polynomial $f(X) \in \mathscr{R} = \mathbb{Z}[X]/(X^n+1)$ has to be split in $n/4$ groups of $4$ coefficients. Then, bits need to be encoded into, and decoded from, groups of four coefficients.
 
 \subsubsection{Polynomial splitting}
 The first goal, i.e. the polynomial splitting, can be quite naturally accomplished observing that, given $\mathscr{S} = \mathbb{Z}[X]/(X^4+1)$, we can write $f(X) \in \mathscr{R}$ as $f(X) = f_0 + f_1X + \ldots + f_{1023}X^{1023} = f'_0(X^{256}) + \ldots + f'_{255}(X^{256})X^{255}$, where the $f'_i$ are elements of $\mathscr{S}$, thus identifying $f(X)$ with the vector $(f'_0,\ldots,f'_{255}) \in \mathscr{S}^{256}$. This means that each $f'_i$ is the polynomial of coefficients $f_i,f_{i+256},f_{i+512},f_{i+768}$, which can be identified with a vector in $\mathbb{Z}^4$.
@@ -71,8 +73,8 @@ Let's call $\mathbf{r}$ the output of the reconciliation function. The final ext
 Applying this algorithm to the polynomial split computed above, the full key can be recovered.\\
 The vector $r$, output of the \verb|HelpRec| function, will then be transmitted to the other party, allowing it to apply the final reconciliation to its polynomial split, thus recovering the same key.
 
-\subsubsection{Failure rate}
-%TODO
+%\subsection{Failure rate}
+% TODO
 
 \subsection{Generation of \textbf{a}}\label{sec:nh:a_generation}
 The parameter \textbf{a} was made ephemeral, in order to avoid all-for-the-price-of-one attacks and parameter manipulation\footnote{For example, the parameter \textbf{a} can be trapdoored, as described in \cite{RLWE_trapdoor} and \cite{newhope}}. Generating a fresh \textbf{a} for each run of the protocol, opens two problems. The generation of \textbf{a} is computationally somewhat costly, and the generated parameter has to be transmitted to the other party of the key exchange, posing a bandwidth problem.\\
@@ -96,7 +98,7 @@ It's worth to point out that although \verb|Parse| rejects some of the material 
 \end{b_algorithm}
 
 \subsubsection{NTT and message encoding}\label{sec:nh:ntt}
-In Section \ref{sec:bg:ntt}
+In Section \ref{sec:bg:ntt}, the NTT was mentioned as a method to speed up polynomial products. The cost of this speed gain is the overhead due to all the transforms and inverse transforms needed for each product. In particular, two NTT applications and one inverse NTT application. 
 
 \subsection{Protocol run}
 In Protocol \ref{prot:newhope} we can see the end result of the proposed improvements: the New Hope protocol for a 128 bit security level, with public parameters $p=12289$, the modulus, and $n=1024$, the degree of the polynomials.\\
@@ -114,21 +116,21 @@ $\nu\leftarrow$\verb|Rec|$(\textbf{v'},\textbf{r})$&$\nu\leftarrow$\verb|Rec|$(\
 $\mu\leftarrow$\verb|SHA3-256|$(\nu)$&$\mu\leftarrow$\verb|SHA3-256|$(\nu)$\\
 \end{protocol}
 
-\subsection{Security analysis}
+%\subsection{Security analysis}
 % TODO
 
 \section{Going back to LWE}
-As mentioned before, R-LWE was welcomed as a way to mitigate many of the shortcomings of cryptographic primitives based on the generic LWE problem, namely the memory required to store protocol parameters and private keys, and the bandwidth necessary to transmit said parameters and the public keys, especially when a fresh parameter \textbf{a} is generated for each instance of the protocol.\\
+As mentioned before, RLWE was welcomed as a way to mitigate many of the shortcomings of cryptographic primitives based on the generic LWE problem, namely the memory required to store protocol parameters and private keys, and the bandwidth necessary to transmit said parameters and the public keys, especially when a fresh parameter \textbf{a} is generated for each instance of the protocol.\\
 On the other hand, the additional structure in ideal lattices, provided by the ring, may enable attacks not viable in the context of generic lattices. Some attacks that exploit the ring structure already exist, although they are limited to some parameter choices, and only shave a few bits off the total security provided by the RLWE problem\footnote{A quite comprehensive recap of attacks on the LWE and RLWE problem can be found in \cite{RLWE_attacks}}. Still, the lack of practical attacks exploiting the ring structure in a catastrophic way should not put our minds to rest, as the cryptanalysis on the LWE and RLWE problems is still in its early stages.\\
 Only one thing is certain, the RLWE problem is a subcase of the LWE problem, which means that any effective attack against the LWE would also apply to RLWE based cryptographic primitives. The converse is not certain, as any attack on RLWE exploiting the ring structure would fail against LWE base primitives. This is a strong guarantee on the relative security of the two problems, regardless of the available attacks.\\
 Nevertheless, the huge performance penalty of LWE primitives has led to an abandonment of this problem, in favor of cheaper RLWE based primitives. Although this led to a sprawl of new protocols, such an abandonment meant that the true potentialities of the LWE problem were not fully explored. This is where the authors of Frodo \cite{frodo} come into play, presenting a viable protocol using LWE primitives and showing that the performance advantages given by the RLWE setting are quite consistent, but not without remedy. 
 
 \section{Frodo}\label{sec:fr}
-The authors of Frodo \cite{frodo} take off from the BCNS proposal \cite{BCNS}, using a more general LWE setting, instead of the R-LWE used in the original paper. Then, as in the New Hope paper, they propose improvements to the protocol, to make it viable for use in the TLS cipher suite.\\
-Since the same security issues pointed out in \cite{newhope} are still valid in the LWE setting, the authors of Frodo are forced to make the parameter \textbf{a} ephemeral, which has an even bigger cost than in the R-LWE setting, both in terms of bandwidth and computational cost. As in New Hope, the first issue is solved using a small seed to generate the parameter \textbf{a}, but the size of this parameter in the setting of LWE can still be an issue for more restricted environments, so the authors of Frodo decided to use a generation function that allows for generation of small blocks of \textbf{a}, which can be used and then discarded if caching them in memory is too burdensome. Even after the optimization, the generation process is remarkably costly, taking up to 40\% of the time necessary. Following the same reasoning of Section \ref{sec:nh:a_generation}, caching might be a partial mitigation for this burden.\\
+The authors of Frodo \cite{frodo} take off from the BCNS proposal \cite{BCNS}, using a more general LWE setting, instead of the RLWE used in the original paper. Then, as in the New Hope paper, they propose improvements to the protocol, to make it viable for use in the TLS cipher suite.\\
+Since the same security issues pointed out in \cite{newhope} are still valid in the LWE setting, the authors of Frodo are forced to make the parameter \textbf{a} ephemeral, which has an even bigger cost than in the RLWE setting, both in terms of bandwidth and computational cost. As in New Hope, the first issue is solved using a small seed to generate the parameter \textbf{a}, but the size of this parameter in the setting of LWE can still be an issue for more restricted environments, so the authors of Frodo decided to use a generation function that allows for generation of small blocks of \textbf{a}, which can be used and then discarded if caching them in memory is too burdensome. Even after the optimization, the generation process is remarkably costly, taking up to 40\% of the time necessary. Following the same reasoning of Section \ref{sec:nh:a_generation}, caching might be a partial mitigation for this burden.\\
 Moreover, the authors present four different easy to sample noise distributions which might be used in place of the rounded Gaussian distribution used in \cite{BCNS}.
 
-\subsection{Reconciliation}
+\subsection{Reconciliation}\label{sec:fr:rec}
 The reconciliation mechanism for Frodo is a generalization of the mechanism presented in \cite{peikert_2014}. This generalized mechanism allows packing one or more bit in each approximate agreed element of $\mathbb{Z}_q$\footnote{In this paragraph, $q$ is chosen to be a power of two, but this mechanism can be adapted to work with any modulus.}, similarly to the reconciliation mechanism of New Hope. On the other hand, while in New Hope there was plenty of room to add some redundancy in the agreed polynomial, this is a luxury the authors of Frodo couldn't afford. On the contrary, for realistic security levels more bits need to be packed in each approximate agreed value. In fact, in order to achieve a security level of $s$ bits, we need to choose $\bar{n}$, $\bar{m}$ and $B$, the number of bits packed into an agreed value, such that $s\ge\bar{m}\bar{n}B$. Increasing $B$ allows to reduce $\bar{m}$ and $\bar{n}$, i.e. the dimension of the LWE matrices, thus decreasing not only the computational cost, but also the bandwidth requirements of the algorithm.\\
 Consider the quantity $B$ and $\bar{B}=log_2[q]-B$. Two functions are defined starting from these two quantities: the \textit{rounding} function, as
 \begin{align*}
@@ -146,9 +148,7 @@ Using these two functions, the \verb|rec| function can be defined as in \cite{pe
 (w,b) &\mapsto \lfloor v \rceil_{2^B}
 \end{align*}
 where $v$ is the closest vector to $w$ s.t. $\langle v \rangle_{2^B} = b$.\\
-%%                      _                                                          _
-%% Claims v u.r => |_ v  | | <v> u.r. and |v-w| < 2^\bar{B}-2 => Rec(w,<v>) = |_ v  |
-%% Still undecided if I should put them here or in the security/correctness analysis
+In order to conclude that \verb|rec| and the \textit{rounding} function can be used as reconciliation functions in Frodo, it must hold that if $\norm{v-w} < 2^{\bar{B}-2}\Rightarrow\verb|rec|(w,\langle v \rangle)=\lfloor v \rceil_{2^B}$. It is immediate that this is true if $v$ is the closest vector to $w$ with \textit{crossrounding} equal to $\langle v \rangle$, which in turn is ensured by bound on the norm of $v-w$.\\
 
 \subsection{Error distributions}
 As mentioned above, the authors present four different easy to sample probability distribution that could be used instead of the rounded Gaussian. In order to achieve a reasonable degree of efficiency both in terms of computational cost of sampling, and of entropy required to generate the samples, the authors decide to use inverse sampling, using a pre-computed table for a cumulative density function, CDF from now on, carefully chosen to be as close as possible to a rounded Gaussian distribution\footnote{The authors use the notion of R\`enyi divergence to quantify closeness. More details in Section \ref{sec:fr:sec_analysis}}. We refer to \cite{frodo} for the exact tables proposed by the authors of Frodo.\\
@@ -257,4 +257,5 @@ $\textbf{v'}\leftarrow\textbf{us}$&$\leftarrow(\textbf{u},\textbf{r})$\\
 $\nu\leftarrow$\verb|Rec|$(\textbf{v'},\textbf{r})$&$\nu\leftarrow\lfloor\textbf{v}\rceil_{2^B}$\\
 \end{protocol}
 
-\subsection{Security Analysis}\label{sec:fr:sec_analysis}
+%\subsection{Security Analysis}\label{sec:fr:sec_analysis}
+% TODO
