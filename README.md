@@ -19,6 +19,22 @@ You can build the project running the command
 $ make
 ```
 
+## Test
+You can run the tests for the project running the command
+```
+make test
+```
+
+The test report will be saved in the file `test_report.txt` in the project root directory
+
+## Benchmarks
+You can run the benchmarks for the project running the command
+```
+make bench
+```
+
+The benchmark report will be saved in the file `benchmark_report.txt` in the project root directory
+
 ## Build individual files as executable
 Individual files in src/ can be compiled into an executable.
 

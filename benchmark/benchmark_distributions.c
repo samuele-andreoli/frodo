@@ -17,21 +17,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <time.h>
-#include "frodo.h"
+#include "benchmark.h"
 
-float start, end;
+#define N_SAMPLES 1000
 
-#define BENCHTEST(name, func, iterations) \
-    printf("------------------------------------------------------------\n"); \
-    printf("Benchmark %s\n", name); \
-    start = (float)clock(); \
-    for(int i = 0; i < iterations; i++) \
-    { \
-        func; \
-    } \
-    end = (float)clock(); \
-    printf("Time elapsed %f\n", (end-start)/CLOCKS_PER_SEC); \
-    printf("Iterations %d\n", iterations); \
-    printf("Time per iteration %lfms\n", (end-start) * 1000 / (CLOCKS_PER_SEC * iterations)); \
-    printf("------------------------------------------------------------\n");
+int main() {
+    csprng RNG;
+    char seed[100];
+
+    for (int i=0;i<100;i++)
+        seed[i] = i;
+    RAND_seed(&RNG,100,seed);
+
+    printf("Benchmark distributions\n\n");
+
+    uint16_t samples[N_SAMPLES] = {0};
+
+    BENCHTEST("plain reconciliation", FRODO_inverse_sample(&RNG, samples, N_SAMPLES), 100);
+}

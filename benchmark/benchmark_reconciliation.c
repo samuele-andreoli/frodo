@@ -23,31 +23,32 @@ int main() {
     csprng RNG;
     char seed[100];
 
-    for (int i=0;i<100;i++)
+    for (int i=0; i<100; i++)
         seed[i] = i;
     RAND_seed(&RNG,100,seed);
 
-    printf("Benchmark parameter and key generation\n\n");
+    printf("Benchmark reconciliation\n\n");
 
-    // Generate seed
-    uint8_t param_seed[FRODO_SEED_LENGTH] = {0};
+    // Instantiate recombined shares
+    uint16_t m[FRODO_BAR_N][FRODO_BAR_N] = {0};
+    for(int i = 0; i < FRODO_BAR_N; i++)
+    {
+        for(int j = 0; j < FRODO_BAR_N; j++)
+        {
+            m[i][j] = (uint8_t)RAND_byte(&RNG) << 8 | (uint8_t)RAND_byte(&RNG);
+        }
+    }
 
-    // Generate parameter
-    uint16_t a[FRODO_N][FRODO_N] = {0};
+    // Regular econciliation
+    uint8_t key[FRODO_KEY_LENGTH] = {0};
+    FRODO_reconcilitaion(key, (uint16_t*)m);
 
-    BENCHTEST("generate parameter", FRODO_generate_a(a, param_seed), 100)
+    BENCHTEST("plain reconciliation", FRODO_reconcilitaion(key, (uint16_t*)m), 10000000);
 
-    // Generate keys from seed
-    FRODO_left_keypair lk = {0};
-    FRODO_right_keypair rk = {0};
+    // Reconciliation with hint
+    uint8_t hint[FRODO_HINT_LENGTH] = {0};
+    uint8_t key_with_hint[FRODO_KEY_LENGTH] = {0};
 
-    BENCHTEST("generate left keypair from seed", FRODO_generate_left_keypair(&RNG, &lk, param_seed), 100);
-    BENCHTEST("generate right keypair from seed", FRODO_generate_right_keypair(&RNG, &rk, param_seed), 100);
-
-    // Generate keys from full parameter
-    FRODO_left_keypair lk_full = {0};
-    FRODO_right_keypair rk_full = {0};
-
-    BENCHTEST("generate left keypair from parameter", FRODO_generate_left_keypair_full_param(&RNG, &lk_full, a), 100);
-    BENCHTEST("generate right keypair from parameter", FRODO_generate_right_keypair_full_param(&RNG, &rk_full, a), 100);
+    BENCHTEST("hint computation", FRODO_hint(hint, (uint16_t*)m), 10000000);
+    BENCHTEST("reconciliation with hint", FRODO_reconcilitaion_with_hint(key_with_hint, hint, (uint16_t*)m), 10000000);
 }
