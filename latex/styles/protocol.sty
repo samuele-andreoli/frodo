@@ -11,7 +11,8 @@
 \numberwithin{protocol}{chapter}
 \newenvironment{protocol}[3]{
 \refstepcounter{protocol}
-\begin{table}
+\begin{table}[!htpb]
+\centering
 \begin{tabular}{|c|c|}
 \hline
 \multicolumn{2}{l}{\textbf{Protocol~\theprotocol.} \textit{#1}}\\
