@@ -75,7 +75,19 @@ The encryption of a message $\mathbf{m}$ is simply the addition of an error vect
 Once again, it is easy to see that all of the operations used in thse cryptosystems are extremely cheap. Indeed, the Mceliece cryptosystem with the original parameters was faster than RSA itself. On the other hand, the public key is, once again, a matrix. This means that the bandwidth requirements for the presented cryptosystem grow as $O(nk)$, due to the dimension and rank of the linear code, while the memory requirements grow as $O(n^2)$, due to the dimension of the invertible matrix $\mathbf{S}$.
 
 \subsubsection{SI Cryptography}
-Supersingular Elliptic Curves Isogenies\footnote{SI from now on.} based cryptography is another promising field in the search for post quantum primitives.
+Supersingular Elliptic Curves Isogenies\footnote{SI from now on.} based cryptography is another promising field in the search for post quantum primitives.\\
+In order to build an SI cryptosystem, one need a supersingular elliptic curve $E$ over $\mathbb{F}_q$, and $S,R$ primitive points in the $\mathscr{l}$-torsion group of the curve and $\mathscr{l'}$-torsion group respectively. Rememeber that the $\mathscr{l}$-torsion group of the curve is the group of points $P\in E[\mathbb{F}_q]$, $s.t.$ $\mathscr{l}P=mathscr{O}$. Using $E$ and $S,R$, the following commutative diagram can be defined
+
+\[\begin{tikzcd}
+E \arrow{r}{\phi} \arrow[swap]{d}{\psi} & E/\langle S \rangle \arrow{d}{\psi'} \\
+E/\langle R \rangle \arrow{r}{\phi'} & E/\langle S,R \rangle
+\end{tikzcd}
+\]
+
+where $\phi$ and $\psi$ are isogenies.\\
+The private key is composed by $E$ an $S$, which also determines $\phi$. The public key is given by $E$, $E/\langle S \rangle$, two generators $P,Q$ of the $\mathscr{l'}$-torsion group and their image via $\phi$. In a similar fashion, a key pair can be constructed using $R$ and $\psi$, and two generators .\\
+With these key pairs, a Diffie-Hellman like key exchange can be defined. Each of the parties will use the mapping of $P,Q$ and the knowledge of the secret isogenies, to compute the mappings of $P,Q$ in $E/\langle S,R \rangle$, thus completing the key exchange.\\
+SI cryptography is very peculiar when it comes to performance. Unlike any other family of primitives presented until now, SI has remarkably small keys. This is not surprising, as it is common in ECC to have small key sizes. Unfortunately, SI cryptography shares another peculiarity with ECC. Indeed, the computational cost of SI cryptography is quite high making it costlier than any other scheme presented until now. 
 
 \subsubsection{Hash based Cryptography}
 Hash based cryptography is a family of cryptosystems based on the properties of hash functions with the most notable example being the Merkle Signature Scheme. This scheme is notorious for being the choice of the Bitcoin protocol for ensuring the transaction data integrity in a block. This family has a very robust proof of security depending only on the properties of hash functions and it is remarkably cheap in terms of computational cost. Unfortunately, it has only applications in digital signature schemes. This means that despite its notable properties it is only a competitor of lattice based cryptosystems when it comes to signature schemes.

@@ -288,14 +288,14 @@
     \else % not Ph.D. degree:
         \beginskip
         \iftwo@supervisors
-          \sigskip {Relatori: }  {\hspace{1.1cm} \@supervisor}
+          \sigskip {Supervisors: }  {\hspace{1.1cm} \@supervisor}
 
-          \hspace{3.2cm}{\@firstreader} \\   %senza spazio sopra 2.6
-          \sigskip {Controrelatore:} {\,   \@secondreader} \\
+          \hspace{3.8cm}{\@firstreader} \\   %senza spazio sopra 2.6
+          \sigskip {Second Reader:} {\,   \@secondreader} \\
         \else
-          \sigskip {Relatore: } \hspace{0.7cm} {\@supervisor} \\
+          \sigskip {Supervisor: } \hspace{0.7cm} {\@supervisor} \\
           \sigskip
-          \sigskip {Controrelatore:} {\@secondreader} \\
+          \sigskip {Second Reader:} {\@secondreader} \\
         \fi
      \fi
 
@@ -402,15 +402,15 @@
     \else % not Ph.D. degree:
         \beginskip
         \sigskip 
-        \sigskip \signature{Tesi di:}  {\@author}\\
+        \sigskip \signature{Author:}  {\@author}\\
         \sigskip
         \iftwo@supervisors
-          \sigskip \signature{Relatori:}{\@supervisor} \\
+          \sigskip \signature{Supervisors:}{\@supervisor} \\
           \sigskip \signature{}{\@firstreader} \\
-          \sigskip \signature{Controrelatore:}{\@secondreader} \\
+          \sigskip \signature{Second Reader:}{\@secondreader} \\
         \else
-          \sigskip \signature{Relatore:}{\@supervisor} \\
-          \sigskip \signature{Controrelatore:}{\@secondreader} \\
+          \sigskip \signature{Supervisor:}{\@supervisor} \\
+          \sigskip \signature{Second Reader:}{\@secondreader} \\
         \fi
      \fi
 

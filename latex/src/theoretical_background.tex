@@ -123,24 +123,61 @@ The other families of lattices fall in some way or another under the polyhedric 
 Following the same spirit of the premise made at the beginning of the chapter, the definition and properties of Ideal Lattices will not be enunciated in general terms, but they will be restricted to the cases relevant in the construction of lattice based primitives. This section follows the approach to ideal lattices adopted in \cite{ideal_lattices}, adapting it to the more restrictive setting.
 
 \begin{definition}[Ideal Lattice]
-$\mathscr{L}$ is said to be an Ideal Lattice, if it is an ideal of a ring of the form $\mathbb{Z}[x]/(f)$, where $f\in\mathbb{Z}[x]$.\\
+$\mathscr{L}$ is said to be an Ideal Lattice, if it is an ideal of a ring of the form $\mathbb{Z}[x]/(f)$, where $f\in\mathbb{Z}[x]$ is monic.\\
 \end{definition}
 
-This definition already hints at the biggest advantage of ideal lattices. Indeed, the polynomial $f$ is enough to identify the lattice $\mathscr{L}=\mathbb{Z}[x]/(f)$. Then, while generic lattices require $n^2$ elements of a matrix for a complete representation, all that is required in the case of ideal lattices are the coefficients of $f$\\
+For their importance in applications, one particular family of Ideal Lattices deserves to be introduced.
 
 \begin{definition}[Cyclic Lattice]
 $\mathscr{L}$ is said to be a Cyclic Lattice, if it is an ideal of a ring of the form $\mathbb{Z}[x]/(x^n-1)$, where $f\in\mathbb{Z}[x]$ is a monic polynomial.\\
 \end{definition}
 
-It is possible to give an alternative formulation for ideal lattices, as presented in \cite{PQC}, which makes their geometry more intuitive and explains how they relate to general lattices.
+It is possible to give an alternative formulation for ideal lattices, as presented in \cite{PQC}, which makes their geometry more intuitive and explains how they relate to general lattices.\\
+Consider the monic polynomial $f\in\mathbf{Z}[x]$, $f=x^n+f_{n-1}x^n-1 + f_0$. From $f$ it is possible to define the linear transformation
+\begin{equation*}
+\mathbf{F}=
+\left[\begin{array}{ccc|c}
+0&\cdots&0&\multirow{4}{*}{$-f$}\\
+\cline{1-3}
+&&&\\
+&I_{n-1}&&\\
+&&&
+\end{array}\right]
+\end{equation*}
 
-% TODO alternative
-\begin{definition}[Modular Convolutional Lattices]
-
+Using this transformation it is possible to define a matrix $\mathbf{B}$ for each $\mathbf{b}\in\mathbb{Z}^n$ as
+\begin{equation*}
+\mathbf{B}=\left[\mathbf{F}^{i}\mathbf{b}\right]_{i=0}^{n-1}
+\end{equation*}
+where $\mathbf{F}^0=I_n$. Using the matrix $\mathbf{B}$ one can generate an Ideal Lattice in $\mathbb{Z}[x]/(f)$.\\
+With this alternative representation it becomes evident why the Cyclic Lattices have this name. Indeed, they are defined as the ideals of the ring $\mathbb{Z}[x]/(x^n-1)$. This means that the associated transformation is
+\begin{equation*}
+\mathbf{T}=
+\left[\begin{array}{ccc|c}
+0&\cdots&0&1\\
+\cline{1-3}
+&&&0\\
+&I_{n-1}&&\vdots\\
+&&&0
+\end{array}\right]
+\end{equation*}
+This transformation is ntothing more than the criculant shift of a vector components by one position. This means that the resulting basis for the lattice is a circulant matrix.\\
+Finally, using this transformation it is easy to give the definition of one last family of Ideal Lattices important in the applications.
+\begin{definition}[Convolutional Modular Lattices]
+Let $\mathscr{L}$ be a lattice in $\mathbf{Z}[x]/(x^{2n}-1)$. $\mathscr{L}$ is said to be a Convolutional Modular Lattice if it is a $q$-ary lattice and it is closed under the linear transformation
+\begin{align*}
+\mathbb{Z}^{2n}&\rightarrow \mathbb{Z}^{2n} \\
+(\mathbf{x}|\mathbf{y}) &\mapsto (\mathbf{Tx}|\mathbf{Ty})
+\end{align*}
+where $\mathbf{T}$ is the linear transformation defined above.
 \end{definition}
-%TODO Body
+\begin{remark}
+The transformation $(\mathbf{x}|\mathbf{y}) \mapsto (\mathbf{Tx}|\mathbf{Ty})$ can be intuitively seen as the circular shifts of the two vector halfs being carried out in parallel.
+\end{remark}
 
-Still, operations in this kind of lattices require a lot of polynomial multiplications, which are not exactly a fast operation if performed naively. Luckily, for lattices on $\mathbb{Z}_q^n$, it is possible to speed up these operations using the Number Theoretical Transform, which allows to convert polynomial multiplication in simple component-wise multiplications between arrays. This will be explored in detail is Section \ref{sec:bg:ntt}. The final cost of 
+Moreover, the alternative formulation makes one of the advantages of Ideal Lattices staggeringly clear. Indeed, once fixed the ring $\mathbb{Z}[x]/(f)$, the representation of an Ideal Lattice only requires the vector $b\in\mathbb{Z}^n$, instead of the full matrix $B$. This reduces the bandwidth necessary to transmit the lattice representation from $n^2$ to $n$ thus eliminating one of the main drawbacks of lattice based cryptography.\\
+Moreover, by interprenting the elements of the lattice and the vector $b$ as polynomials, all of the operations on lattices can be reinterpreted as polynomial operations. This has a huge implication, as the matrix $\mathbf{B}$ is not required to perfomr this kind of operations thus making the meory requirements grow as $O(n)$ even during the computations.\\
+Still, polynomial multiplications are not exactly a fast operation if performed naively. Luckily, for lattices in $\mathbb{Z}_q^n[x]/(f)$, it is possible to speed up these operations using the Number Theoretical Transform, which allows to convert polynomial multiplication in simple component-wise multiplications between arrays. This will be explored in detail is Section \ref{sec:bg:ntt}. The final cost of 
 
 \section{Noise Distributions}
 Lattice based cryptography schemes heavily rely on short random vector, typically sampled from a Discrete Gaussian distribution, used to perturb lattice elements. This section introduces a few relevant concepts on this topic.\\
@@ -176,7 +213,7 @@ Using the concepts of Gaussian mass and Gaussian measure, the discrete Gaussian 
 \begin{definition}[Discrete Gaussian Distribution]
 Let $\mathscr{L}$ be a lattice, $\mathbf{c}\in\mathbb{R}^n$ and consider $s>0$. The Discrete Gaussian Distribution of parameter $s$ and center $\mathbf{c}$ over $\mathscr{L}$ is the distribution induced by the measure
 \begin{equation*}
-\mathbb{D_{s,\mathbf{c},\mathscr{L}}}(\mathbf{x})= \frac{\rho_{s,\mathbf{c}}(\mathbf{x})}{R_{s,\mathbf{c}}(\mathscr{L}}
+\mathbb{D_{s,\mathbf{c},\mathscr{L}}}(\mathbf{x})= \frac{\rho_{s,\mathbf{c}}(\mathbf{x})}{R_{s,\mathbf{c}}(\mathscr{L})}
 \end{equation*}
 \end{definition}
 
@@ -351,7 +388,7 @@ On the other hand, the LWE shifts the focus of the problem to specific elements 
 
 
 \begin{definition}[Search LWE]
-Let $\mathscr{L}$ be a lattice, $B$ a basis for $\mathscr{L}$, $\chi[\mathbb{Z}_q^n]$ a Discrete Gaussian Distribution, and $\mathbf{s}\in\mathbb{Z}_q^n$. Given the noisy product $\mathbb{v}=Bs + e$, where $e\xleftarrow{\$}\chi[\mathbb{Z}_q^n]$, find $\mathbf{s}$.
+Let $\mathscr{L}$ be a lattice, $B$ a basis for $\mathscr{L}$, $\chi[\mathbb{Z}_q^n]$ a Discrete Gaussian Distribution, and $\mathbf{s}\in\mathbb{Z}_q^n$. Given the noisy products $\mathbb{v}_i=\mathbf{Bs} + \mathbf{e}_i$, where $\mathbf{e}_i\xleftarrow{\$}\chi[\mathbb{Z}_q^n]$, find $\mathbf{s}$.
 \end{definition}
 
 \begin{remark}
@@ -394,22 +431,37 @@ then, the first component of $\mathbf{s}$ is guessed as $k\in\mathbb{Z}_q$. Fina
 
 %      TODO?           Algoritmi (fft, fast decoding)
 
-\subsection{Drawbacks}
+\subsubsection{Drawbacks}
 At the beginning of this section, it was mentioned how the LWE allows to shift the focus of the problem from the lattice itself, to its elements. Although this is a step in the good direction, a basis of the lattice is still required to carry out computations, which means that it must be somehow stored, leaving the elements required for the representation of the problem at $O(n^2)$. Even worse: if the parameters are not fixed, for instance to avoid all-for-the-price-of-one attacks, the lattice basis will have to be transmitted anyway, leaving the situation unchanged with respect to the first, simpler problems.\\
 Luckily, there are some mitigations to these problems, which still allow to create practical primitives using the LWE problem, but the very existence of these issues lead to the search of a new problem that didn't have them to begin with. In the end, the most promising candidate was identified in the RLWE problem.
 
 \section{The RLWE problem}
-% TODO
-%         Problema dell'RLWE [RLWE_security, RLWE_toolkit]
+The RLWE problem is a specialized version of the LWE problem working on Ideal Lattices. Its purpose is to mitigate the shortcomings of the general LWE, like the memory and bandwidth requirements. Considering the polynomial formulation of Ideal Lattices the Search RLWE can be defined as follows.
 
-%                 Presentazione del problema dell'RLWE
-%                 Problemi risolti dal'uso della struttura di anello:
-%                 - Rappresentazione ora richiede solo O(n)
-%                 - La chiave vive in Rq (1/n dello spazio)
-%                 - Decoding più veloce
+\begin{definition}[Serach RLWE]
+Let $\mathscr{L}$ be the lattice in $\mathbb{Z}_q[x]/(f)$ defined by the polynomial $b$, $\chi[\mathbb{Z}_q[x]/(f)$ a Discrete Gaussian Distribution, and $\mathbf{s}\in\mathbb{Z}_q[x]/(f)$. Given the noisy products $\mathbb{v}_i=\mathbf{bs} + \mathbf{e}_i$, where $\mathbf{e}_i\xleftarrow{\$}\chi[\mathbb{Z}_q[x]/(f)]$, find $\mathbf{s}$.
+\end{definition}
 
-%         Prova di sicurezza [pqc, RLWE_security]
+The decisional formulation of the RLWE problem can be defined as follows.
 
-%                 Riduzione di SVP e SIS a RLWE e LWE 
-%                 [RLWE_security per SVP -> search-RLWE -> decisional RLWE]
-%                 [SVP -> BDD -> LWE]
+\begin{definition}[Decision RLWE]
+Let $\mathscr{L}$ be the lattice in $\mathbb{Z}_q[x]/(f)$ defined by the polynomial $b$, $\chi[\mathbb{Z}_q[x]/(f)$ a Discrete Gaussian Distribution, and $\mathbf{s}\in\mathbb{Z}_q[x]/(f)$. Given two pairs $(\mathbf{b},\mathbf{bs} + \mathbf{e}) and (\mathbf{b},mathbf{w})$, where $\mathbf{e}\xleftarrow{\$}\chi[\mathbb{Z}_q[x]/(f)]$, and $\mathbf{w}\xleftarrow{\$}U[\mathbb{Z}_q[x]/(f)]$, distinguish the pair generated with the noisy product from the one sampled from the uniform distribution. 
+\end{definition}
+
+Because of the similarity with the LWE problem, the following theorems still hold.
+
+\begin{theorem}
+RLWE $\Leftrightarrow$ BDD
+\end{theorem}
+\begin{theorem}
+Search RLWE and Decisional RLWE are equivalent.
+\end{theorem}
+
+The proofs of these theorems can be carried out as they were in the context of Generic Lattices for LWE.\\
+
+\subsection{Advantages of the RLWE}
+The first advantage of the RLWE prolem comes from the setting of Ideal Lattices. As mentioned above, this translates into a cheaper representation of the problem in terms of memory. Moreover, using the NTT the noisy products can be carried out in quasi linear time, compared to the quadratic time required by the noisy products in the LWE problem. Although the LWE primitives are already cheap from this point of view, this is still an advantage not to be underestimated.\\
+Last but no least, the use of the polynomial product in $\mathbb{Z}[x]/(f)$ has huge repercussions in the applications. Indeed, when two vectors in $\mathbb{Z}_q^n$ are comined with the scalar product they produce just one scalar, but when two polynomial are multiplied together the result is a polynomial itself. The importance of this fact will be clearer in when the applications will be presented. It suffices to say that, if some information were to be extracted from the result of these products, the amount of information that could be retrieved in the setting of RLWE would be $n$ times the amount retrievable in the LWE setting.
+
+\subsubsection{Security concerns}
+The benefits of using the RLWE problem in building cryptosystems are undeniable. However, the introduction of additional structure in the lattices raised few security concerns. While some of the hard problems of lattices have been proven to be equally hard in Ideal Lattice and in Generic ones, this is not the case for the RLWE problem. Indeed, the hardness of the RLWE problem is still an open question. The lack of attacks against Ideal Lattices that fare better than their generic counterpart is reassuring, but without a formal proof of the equivalence of the two problems there is no guarantee this is going to be always the case.
