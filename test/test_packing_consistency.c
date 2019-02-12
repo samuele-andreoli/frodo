@@ -17,7 +17,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "amcl.h"
 #include "packing.h"
 
 #define BTW_CMP(a,b) (((a) ^ (b)) & mask) != 0
@@ -29,7 +28,7 @@ const uint16_t mask = (1 << FRODO_MODULUS) - 1;
 
 int main()
 {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char rng_seed[100];
 
     uint16_t share[FRODO_N * FRODO_BAR_N] = {0};

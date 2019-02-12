@@ -19,10 +19,10 @@
 
 #include "benchmark.h"
 
-#define N_SAMPLES 1000
+#define N_SAMPLES 752 * 8
 
 int main() {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char seed[100];
 
     for (int i=0;i<100;i++)
@@ -33,5 +33,7 @@ int main() {
 
     uint16_t samples[N_SAMPLES] = {0};
 
-    BENCHTEST("plain reconciliation", FRODO_inverse_sample(&RNG, samples, N_SAMPLES), 100);
+    BENCHTEST("inverse sample", FRODO_inverse_sample(&RNG, samples, N_SAMPLES), 100);
+
+    return 0;
 }

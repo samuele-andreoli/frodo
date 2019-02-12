@@ -21,7 +21,7 @@
 
 #define FRODO_MEMORY_CLEAR(v, s) for(int i = 0; i < s; i++) ((uint16_t*)v)[i] = 0;
 
-void FRODO_generate_left_keypair(csprng *RNG, FRODO_left_keypair *k, uint8_t seed[FRODO_SEED_LENGTH])
+void FRODO_generate_left_keypair(FRODO_CSPRNG *RNG, FRODO_left_keypair *k, uint8_t seed[FRODO_SEED_LENGTH])
 {
     // Sample secret key
     FRODO_inverse_sample(RNG, (uint16_t*)k->private, FRODO_BAR_N * FRODO_N);
@@ -33,7 +33,7 @@ void FRODO_generate_left_keypair(csprng *RNG, FRODO_left_keypair *k, uint8_t see
     FRODO_generate_multiply_by_column(k->public, k->private, seed);
 }
 
-void FRODO_generate_right_keypair(csprng *RNG, FRODO_right_keypair *k, uint8_t seed[FRODO_SEED_LENGTH])
+void FRODO_generate_right_keypair(FRODO_CSPRNG *RNG, FRODO_right_keypair *k, uint8_t seed[FRODO_SEED_LENGTH])
 {
     // Sample secret key
     FRODO_inverse_sample(RNG, (uint16_t*)k->private, FRODO_N * FRODO_BAR_N);
@@ -45,7 +45,7 @@ void FRODO_generate_right_keypair(csprng *RNG, FRODO_right_keypair *k, uint8_t s
     FRODO_generate_multiply_by_row(k->public, k->private, seed);
 }
 
-void FRODO_generate_left_keypair_full_param(csprng *RNG, FRODO_left_keypair *k, uint16_t a[FRODO_N][FRODO_N])
+void FRODO_generate_left_keypair_full_param(FRODO_CSPRNG *RNG, FRODO_left_keypair *k, uint16_t a[FRODO_N][FRODO_N])
 {
     // Sample secret key
     FRODO_inverse_sample(RNG, (uint16_t*)k->private, FRODO_BAR_N * FRODO_N);
@@ -57,7 +57,7 @@ void FRODO_generate_left_keypair_full_param(csprng *RNG, FRODO_left_keypair *k, 
     FRODO_parameter_left_mul(k->public, k->private, a);
 }
 
-void FRODO_generate_right_keypair_full_param(csprng *RNG, FRODO_right_keypair *k, uint16_t a[FRODO_N][FRODO_N])
+void FRODO_generate_right_keypair_full_param(FRODO_CSPRNG *RNG, FRODO_right_keypair *k, uint16_t a[FRODO_N][FRODO_N])
 {
     // Sample secret key
     FRODO_inverse_sample(RNG, (uint16_t*)k->private, FRODO_BAR_N * FRODO_N);
@@ -90,7 +90,7 @@ void FRODO_right_key_agreement(uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PA
     FRODO_MEMORY_CLEAR(combined_shares, FRODO_BAR_N * FRODO_BAR_N);
 }
 
-void FRODO_left_key_agreement(csprng *RNG, uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], uint8_t hint[FRODO_HINT_LENGTH], uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_left_keypair *k)
+void FRODO_left_key_agreement(FRODO_CSPRNG *RNG, uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], uint8_t hint[FRODO_HINT_LENGTH], uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_left_keypair *k)
 {
     uint16_t right_keyshare[FRODO_N][FRODO_BAR_N] = {0};
     uint16_t combined_shares[FRODO_BAR_N][FRODO_BAR_N] = {0};

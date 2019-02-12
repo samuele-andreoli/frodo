@@ -20,9 +20,8 @@
 #ifndef LWE_GENERATE_H
 #define LWE_GENERATE_H
 
-#include "amcl.h"
-
 #include "frodo_config.h"
+#include "backend.h"
 
 /* Matrix generation API */
 

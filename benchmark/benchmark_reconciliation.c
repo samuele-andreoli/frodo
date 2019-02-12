@@ -20,7 +20,7 @@
 #include "benchmark.h"
 
 int main() {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char seed[100];
 
     for (int i=0; i<100; i++)
@@ -51,4 +51,6 @@ int main() {
 
     BENCHTEST("hint computation", FRODO_hint(hint, (uint16_t*)m), 10000000);
     BENCHTEST("reconciliation with hint", FRODO_reconcilitaion_with_hint(key_with_hint, hint, (uint16_t*)m), 10000000);
+
+    return 0;
 }

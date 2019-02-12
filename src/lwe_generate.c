@@ -25,16 +25,14 @@
     stripe[0] = row;                           \
     stripe[1] = column;
 
+const int a_len = FRODO_N * FRODO_N * sizeof(uint16_t);
+const int stripe_len = FRODO_A_STRIPE_LEN * sizeof(uint16_t);
+
 /* Parameter generation functions */
 void FRODO_generate_a(uint16_t a[FRODO_N][FRODO_N], uint8_t seed[FRODO_SEED_LENGTH])
 {
-    amcl_aes aes;
+    FRODO_AES_CTX aes_ctx;
     uint16_t i, j;
-
-    // Willingly ignore the exit code
-    // It only fails with exit code if the key has an invalid length,
-    // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
-    AES_init(&aes, ECB, FRODO_SEED_LENGTH, (char*)seed, NULL);
 
     for(i=0; i<FRODO_N; i++)
     {
@@ -42,9 +40,14 @@ void FRODO_generate_a(uint16_t a[FRODO_N][FRODO_N], uint8_t seed[FRODO_SEED_LENG
         {
             a[i][j]=i;
             a[i][j+1]=j;
-            AES_ecb_encrypt(&aes, (uchar*)&a[i][j]);
         }
     }
+
+    // Willingly ignore the exit code
+    // It only fails with exit code if the key has an invalid length,
+    // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
+    FRODO_AES_INIT(&aes_ctx, seed, FRODO_SEED_LENGTH);
+    FRODO_AES_ENCRYPT(&aes_ctx, a, a_len);
 
     // No need to clean AES, as the seed for the parameter a is public
 }
@@ -85,20 +88,21 @@ void FRODO_parameter_right_mul(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t s[FR
 
 void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t s[FRODO_N][FRODO_BAR_N], uint8_t seed[FRODO_SEED_LENGTH])
 {
-    amcl_aes aes;
+    FRODO_AES_CTX aes_ctx;
     uint16_t i, j, k, l;
 
     // Willingly ignore the exit code
     // It only fails with exit code if the key has an invalid length,
     // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
-    AES_init(&aes, ECB, FRODO_SEED_LENGTH, (char*)seed, NULL);
+    FRODO_AES_INIT(&aes_ctx, seed, FRODO_SEED_LENGTH);
+
 
     for(i=0; i<FRODO_N; i++)
     {
         for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
         {
             INIT_STRIPE(stripe, i, j);
-            AES_ecb_encrypt(&aes, (uchar*)stripe);
+            FRODO_AES_ENCRYPT(&aes_ctx, stripe, FRODO_SEED_LENGTH);
 
             for(l=0; l<FRODO_BAR_N; l++)
             {
@@ -115,20 +119,20 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
 
 void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint16_t s[FRODO_BAR_N][FRODO_N], uint8_t seed[FRODO_SEED_LENGTH])
 {
-    amcl_aes aes;
+    FRODO_AES_CTX aes_ctx;
     uint16_t i, j, k, l;
 
     // Willingly ignore the exit code
     // It only fails with exit code if the key has an invalid length,
     // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
-    AES_init(&aes, ECB, FRODO_SEED_LENGTH, (char*)seed, NULL);
+    FRODO_AES_INIT(&aes_ctx, seed, FRODO_SEED_LENGTH);
 
     for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
     {
         for(i=0; i<FRODO_N; i++)
         {
             INIT_STRIPE(stripe, i, j);
-            AES_ecb_encrypt(&aes, (uchar*)stripe);
+            FRODO_AES_ENCRYPT(&aes_ctx, stripe, FRODO_SEED_LENGTH);
 
             for(k=0; k<FRODO_A_STRIPE_LEN; k++)
             {
@@ -146,7 +150,7 @@ void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint1
 #ifdef HAS_MAIN
 int main()
 {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char rng_seed[100];
     for (int i=0; i<100; i++)
         rng_seed[i] = i;

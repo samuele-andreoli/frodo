@@ -20,9 +20,8 @@
 #ifndef FRODO_PACKING_H
 #define FRODO_PACKING_H
 
-#include <stdint.h>
-
 #include "frodo_config.h"
+#include "backend.h"
 #include "distributions.h"
 #include "lwe_reconciliation.h"
 #include "lwe_generate.h"

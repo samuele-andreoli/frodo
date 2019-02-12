@@ -33,6 +33,14 @@
 #define FRODO_CONFIGURATION FRODO_RECOMMENDED
 #endif
 
+/* Optimization */
+#define FRODO_OPTIMIZE_MEMORY 1
+#define FRODO_OPTIMIZE_TIME 2
+
+#ifndef FRODO_OPTIMIZATION
+#define FRODO_OPTIMIZATION FRODO_OPTIMIZE_MEMORY
+#endif
+
 /* Error distribution */
 #define FRODO_D1 1
 #define FRODO_D2 2

@@ -20,9 +20,8 @@
 #ifndef LWE_RECONCILIATION_H
 #define LWE_RECONCILIATION_H
 
-#include <stdint.h>
-
 #include "frodo_config.h"
+#include "backend.h"
 
 /* Reconciliation API */
 

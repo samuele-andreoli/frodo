@@ -17,12 +17,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "amcl.h"
 #include "lwe_reconciliation.h"
 
 int main()
 {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char rng_seed[100];
 
     for (int i=0;i<100;i++)

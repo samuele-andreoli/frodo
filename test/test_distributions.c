@@ -42,7 +42,7 @@ const uint16_t CDF[FRODO_CDF_LENGTH] = {9651, 24351, 30841, 32500, 32745, 32766,
 /* Perform Chi Square test with p=.999 */
 
 int main() {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char seed[100];
 
     for (int i=0; i<100; i++)

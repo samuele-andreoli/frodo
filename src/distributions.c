@@ -89,7 +89,7 @@ typedef struct __attribute__((__packed__)){
 #define FRODO_I_SAMPLE_CTCOMP(x,v) (uint16_t)(x-v)>>15  
 
 /* Inverse sampling function */
-void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
+void FRODO_inverse_sample(FRODO_CSPRNG* RNG, uint16_t* samples, size_t n_samples)
 {
     uint8_t entropy[FRODO_DISTRIBUTION_STEP];
 
@@ -97,7 +97,7 @@ void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
     for(size_t i = 0; i < n_samples; i++)
     {
         // Get entropy
-        *entropy = RAND_byte(RNG);
+        *entropy = FRODO_CSPRNG_GET(RNG);
 
         // Constant time comparison
         for(int j = 0; j < FRODO_CDF_LENGTH-1; j++)
@@ -113,9 +113,9 @@ void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
     for(size_t i = 0; i < n_samples; i+=2)
     {
         // Get entropy
-        *entropy = RAND_byte(RNG);
-        *(entropy+1) = RAND_byte(RNG);
-        *(entropy+2) = RAND_byte(RNG);
+        *entropy = FRODO_CSPRNG_GET(RNG);
+        *(entropy+1) = FRODO_CSPRNG_GET(RNG);
+        *(entropy+2) = FRODO_CSPRNG_GET(RNG);
 
         // Constant time comparison
         for(int j = 0; j < FRODO_CDF_LENGTH-1; j++)
@@ -133,8 +133,8 @@ void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
     for(size_t i = 0; i < n_samples; i++)
     {
         // Get entropy
-        *entropy = RAND_byte(RNG);
-        *(entropy+1) = RAND_byte(RNG);
+        *entropy = FRODO_CSPRNG_GET(RNG);
+        *(entropy+1) = FRODO_CSPRNG_GET(RNG);
 
         // Constant time comparison
         for(int j = 0; j < FRODO_CDF_LENGTH-1; j++)
@@ -151,7 +151,7 @@ void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples)
 
 #ifdef HAS_MAIN
 int main() {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char seed[100];
 
     for (int i=0;i<100;i++)

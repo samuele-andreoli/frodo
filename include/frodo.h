@@ -20,9 +20,8 @@
 #ifndef FRODO_H
 #define FRODO_H
 
-#include "amcl.h"
-
 #include "frodo_config.h"
+#include "backend.h"
 #include "distributions.h"
 #include "lwe_generate.h"
 #include "lwe_reconciliation.h"
@@ -40,20 +39,62 @@ typedef struct {
 
 /* Keypair generation API */
 
-void FRODO_generate_left_keypair(csprng *RNG, FRODO_left_keypair *k, uint8_t seed[FRODO_SEED_LENGTH]);
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
+void FRODO_generate_left_keypair(FRODO_CSPRNG *RNG, FRODO_left_keypair *k, uint8_t seed[FRODO_SEED_LENGTH]);
 
-void FRODO_generate_right_keypair(csprng *RNG, FRODO_right_keypair *k, uint8_t seed[FRODO_SEED_LENGTH]);
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
+void FRODO_generate_right_keypair(FRODO_CSPRNG *RNG, FRODO_right_keypair *k, uint8_t seed[FRODO_SEED_LENGTH]);
 
-void FRODO_generate_left_keypair_full_param(csprng *RNG, FRODO_left_keypair *k, uint16_t a[FRODO_N][FRODO_N]);
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
+void FRODO_generate_left_keypair_full_param(FRODO_CSPRNG *RNG, FRODO_left_keypair *k, uint16_t a[FRODO_N][FRODO_N]);
 
-void FRODO_generate_right_keypair_full_param(csprng *RNG, FRODO_right_keypair *k, uint16_t a[FRODO_N][FRODO_N]);
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
+void FRODO_generate_right_keypair_full_param(FRODO_CSPRNG *RNG, FRODO_right_keypair *k, uint16_t a[FRODO_N][FRODO_N]);
 
 /* Protocol run API */
 
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
 void FRODO_right_keyshare_pack(uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_right_keypair *k);
 
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
 void FRODO_right_key_agreement(uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], FRODO_right_keypair *k, uint8_t hint[FRODO_HINT_LENGTH]);
 
-void FRODO_left_key_agreement(csprng *RNG, uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], uint8_t hint[FRODO_HINT_LENGTH], uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_left_keypair *k);
+/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+ *
+ * @param dst, matrix to store the product. The result of lr is added to dst
+ * @param l, left key share.
+ * @param r, right key share
+ */
+void FRODO_left_key_agreement(FRODO_CSPRNG *RNG, uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], uint8_t hint[FRODO_HINT_LENGTH], uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_left_keypair *k);
 
 #endif

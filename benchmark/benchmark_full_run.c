@@ -20,7 +20,7 @@
 #include "benchmark.h"
 
 int main() {
-	csprng RNG;
+    FRODO_CSPRNG RNG;
     char seed[100];
 
     for (int i=0;i<100;i++)
@@ -54,4 +54,6 @@ int main() {
     uint8_t key_right[FRODO_KEY_LENGTH] = {0};
 
     BENCHTEST("right key agreement", FRODO_right_key_agreement(key_right, left_keyshare, &rk, hint), 10000);
+
+    return 0;
 }

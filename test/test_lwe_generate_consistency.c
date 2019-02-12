@@ -17,12 +17,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "amcl.h"
 #include "lwe_generate.h"
 
 int main()
 {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char rng_seed[100];
 
     uint16_t sl[FRODO_BAR_N][FRODO_N];

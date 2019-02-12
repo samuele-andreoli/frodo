@@ -23,7 +23,7 @@
 
 int main()
 {
-    csprng RNG;
+    FRODO_CSPRNG RNG;
     char seed[100];
 
     for (int i=0;i<100;i++)

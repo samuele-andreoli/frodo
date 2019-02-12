@@ -2,6 +2,15 @@
 
 TARGET := libfrodo
 
+## Optimization configuration
+MEMORY := MEMORY
+TIME := TIME
+OPTIMIZATION := ${MEMORY}
+
+## Backend configuration
+BACKEND_MILAGRO := 1
+BACKEND_OPENSSL := 2
+
 ## Local directories
 BASEDIR := $(shell pwd)
 SRCDIR := src
@@ -33,7 +42,25 @@ LIBRARY_PATH := $(shell echo ${LD_LIBRARY_PATH}):${MILAGRO_LIBRARY_PATH}:${FRODO
 
 ## Compilation options
 CC := gcc
-BASEFLAGS := -Wall -Werror -Wextra -pedantic -O3
+ifeq ($(OPTIMIZATION),$(MEMORY))
+	CONFIG_FLAGS := -O2 -DFRODO_BACKEND=${BACKEND_MILAGRO}
+endif
+ifeq ($(OPTIMIZATION),$(TIME))
+	CONFIG_FLAGS := -O3 -DFRODO_BACKEND=${BACKEND_OPENSSL}
+endif
+BASEFLAGS := -Wall -Werror -Wextra -pedantic ${CONFIG_FLAGS}
+
+## Linker options
+MILAGRO_LINK_FLAGS := -L${MILAGRO_LIBRARY_PATH} -lamcl_core
+OPENSSL_LINK_FLAGS := -lcrypto -lssl -lm
+FRODO_LINK_FLAGS := -L${FRODO_LIBRARY_PATH} -lfrodo
+
+ifeq ($(OPTIMIZATION),$(MEMORY))
+	LINK_FLAGS := ${MILAGRO_LINK_FLAGS}
+endif
+ifeq ($(OPTIMIZATION),$(TIME))
+	LINK_FLAGS := ${MILAGRO_LINK_FLAGS} ${OPENSSL_LINK_FLAGS}
+endif
 
 ### Prepare env ###
 BUILD_SOURCES := $(shell find ${SRCDIR} -type f -name "*.c")
@@ -88,19 +115,19 @@ ${BUILDDIR}/lib/${TARGET}.so: ${BUILD_OBJECTS}
 	@echo "Build shared lib $@"
 	@cp ${INCLUDEDIR}/* ${BUILDDIR}/include
 	@export C_INCLUDE_PATH=${INCLUDE_PATH}; \
-	 $(CC) -fPIC ${BASEFLAGS} $^ -shared -o $@
+	 $(CC) -fPIC ${BASEFLAGS} ${LINK_FLAGS} $^ -shared -o $@
 
 $(BUILD_OBJECTS): $(OBJDIR)/%.o: %.c
 	@mkdir -p $(@D)
 	@echo "Build object $@"
-	@export C_INCLUDE_PATH=${INCLUDE_PATH}:${INCLUDEDIR}; \
-	 $(CC) -fPIC ${BASEFLAGS} -c $< -o $@
+	export C_INCLUDE_PATH=${INCLUDE_PATH}:${INCLUDEDIR}; \
+	 $(CC) -fPIC ${BASEFLAGS} ${LINK_FLAGS} -c $< -o $@
 
 $(BINARIES): ${BINDIR}/%: %.c
 	@mkdir -p $(@D)
 	@echo "Build binary $@"
 	@export C_INCLUDE_PATH=${INCLUDE_PATH}:${BENCHDIR}; \
-	 $(CC) ${BASEFLAGS} $< -L${FRODO_LIBRARY_PATH} -lfrodo -L${MILAGRO_LIBRARY_PATH} -lamcl_core -o $@
+	 $(CC) ${BASEFLAGS} $< ${FRODO_LINK_FLAGS} ${LINK_FLAGS} -o $@
 
 
 # Testing rules
@@ -117,7 +144,7 @@ $(TEST_TARGETS): ${BINDIR}/%.test: ${BINDIR}/%
 	@echo "------------------------------------------------------------"
 	@echo "  Run $<"
 	@echo "  $<" >> ${TEST_REPORT}
-	@export LD_LIBRARY_PATH=${FRODO_LIBRARY_PATH}:${MILAGRO_LIBRARY_PATH}; ./$< >> ${TEST_REPORT} &&												\
+	@export LD_LIBRARY_PATH=${LIBRARY_PATH}; ./$< >> ${TEST_REPORT} &&												\
 	(echo "    - Test successful"; echo "    - Test successful" >> ${TEST_REPORT};) || \
 	(echo "    - Test failed"; echo "    - Test failed" >> ${TEST_REPORT};)
 
@@ -136,7 +163,7 @@ bench_header:
 $(BENCH_TARGETS): ${BINDIR}/%.bench: ${BINDIR}/%
 	@echo "  Run $<"
 	@echo "\n  $<\n" >> ${BENCH_REPORT}
-	@export LD_LIBRARY_PATH=${FRODO_LIBRARY_PATH}:${MILAGRO_LIBRARY_PATH}; ./$< >> ${BENCH_REPORT}
+	@export LD_LIBRARY_PATH=${LIBRARY_PATH}; ./$< >> ${BENCH_REPORT}
 
 ## Dependencies rules
 .PHONY: dep
@@ -159,7 +186,7 @@ ${MILAGRO_BUILDDIR}: ${MILAGRO_SRCDIR}
 	git checkout ${MILAGRO_VERSION};\
 	mkdir -p ${MILAGRO_BUILDDIR};	\
 	cd ${MILAGRO_BUILDDIR};			\
-	cmake -DWORD_SIZE=64 -DAMCL_CURVE= -DAMCL_RSA= -DCMAKE_INSTALL_PREFIX=${MILAGRO_INSTALLDIR} ${MILAGRO_SRCDIR}
+	cmake -DCMAKE_C_FLAGS=-O3 -DWORD_SIZE=64 -DAMCL_CURVE= -DAMCL_RSA= -DCMAKE_INSTALL_PREFIX=${MILAGRO_INSTALLDIR} ${MILAGRO_SRCDIR}
 
 ${MILAGRO_SRCDIR}:
 	git clone ${MILAGRO_URL} ${MILAGRO_SRCDIR}

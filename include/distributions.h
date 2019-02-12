@@ -20,9 +20,8 @@
 #ifndef FRODO_DISTRIBUTION_H
 #define FRODO_DISTRIBUTION_H
 
-#include "amcl.h"
-
 #include "frodo_config.h"
+#include "backend.h"
 
 /* Inverse sample API */
 
