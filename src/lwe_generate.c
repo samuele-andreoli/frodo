@@ -59,9 +59,9 @@ void FRODO_parameter_left_mul(uint16_t dst[FRODO_BAR_N][FRODO_N], uint16_t s[FRO
 
     for(i=0; i<FRODO_BAR_N; i++)
     {
-        for(j=0; j<FRODO_N; j++)
+        for(k=0; k<FRODO_N; k++)
         {
-            for(k=0; k<FRODO_N; k++)
+            for(j=0; j<FRODO_N; j++)
             {
                 dst[i][j]+=s[i][k]*a[k][j];
             }
@@ -76,9 +76,9 @@ void FRODO_parameter_right_mul(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t s[FR
 
     for(i=0; i<FRODO_N; i++)
     {
-        for(j=0; j<FRODO_BAR_N; j++)
+        for(k=0; k<FRODO_N; k++)
         {
-            for(k=0; k<FRODO_N; k++)
+            for(j=0; j<FRODO_BAR_N; j++)
             {
                 dst[i][j]+=a[i][k]*s[k][j];
             }
@@ -96,7 +96,6 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
     // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
     FRODO_AES_INIT(&aes_ctx, seed, FRODO_SEED_LENGTH);
 
-
     for(i=0; i<FRODO_N; i++)
     {
         for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
@@ -104,9 +103,9 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
             INIT_STRIPE(stripe, i, j);
             FRODO_AES_ENCRYPT(&aes_ctx, stripe, FRODO_SEED_LENGTH);
 
-            for(l=0; l<FRODO_BAR_N; l++)
+            for(k=0; k<FRODO_A_STRIPE_LEN; k++)
             {
-                for(k=0; k<FRODO_A_STRIPE_LEN; k++)
+                for(l=0; l<FRODO_BAR_N; l++)
                 {
                     dst[i][l]+=(uint16_t)(stripe[k]*s[j+k][l]);
                 }
@@ -121,6 +120,7 @@ void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint1
 {
     FRODO_AES_CTX aes_ctx;
     uint16_t i, j, k, l;
+    uint16_t pos_l;
 
     // Willingly ignore the exit code
     // It only fails with exit code if the key has an invalid length,
@@ -134,12 +134,14 @@ void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint1
             INIT_STRIPE(stripe, i, j);
             FRODO_AES_ENCRYPT(&aes_ctx, stripe, FRODO_SEED_LENGTH);
 
-            for(k=0; k<FRODO_A_STRIPE_LEN; k++)
+            pos_l = 0;
+            for(l=0; l<FRODO_BAR_N; l++)
             {
-                for(l=0; l<FRODO_BAR_N; l++)
+                for(k=0; k<FRODO_A_STRIPE_LEN; k++)
                 {
-                    dst[l][j+k]+=(uint16_t)(stripe[k]*s[l][i]);
+                    ((uint16_t*)dst)[pos_l + j + k]+=(uint16_t)(stripe[k]*((uint16_t*) s)[pos_l + i]);
                 }
+                pos_l += FRODO_N;
             }
         }
     }
