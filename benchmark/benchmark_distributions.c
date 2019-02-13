@@ -25,6 +25,7 @@ int main() {
     FRODO_CSPRNG RNG;
     char seed[100];
 
+    // Non random seed for testing purposes
     for (int i=0;i<100;i++)
         seed[i] = i;
     RAND_seed(&RNG,100,seed);
@@ -33,7 +34,7 @@ int main() {
 
     uint16_t samples[N_SAMPLES] = {0};
 
-    BENCHTEST("inverse sample", FRODO_inverse_sample(&RNG, samples, N_SAMPLES), 100);
+    BENCHTEST("inverse sample", FRODO_inverse_sample(&RNG, samples, N_SAMPLES), 1000);
 
     return 0;
 }

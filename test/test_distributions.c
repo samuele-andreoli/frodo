@@ -45,6 +45,7 @@ int main() {
     FRODO_CSPRNG RNG;
     char seed[100];
 
+    // Non random seed for testing purposes
     for (int i=0; i<100; i++)
         seed[i] = i;
     RAND_seed(&RNG, 100, seed);

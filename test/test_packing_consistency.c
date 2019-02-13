@@ -35,6 +35,7 @@ int main()
     uint8_t packed[FRODO_PACKED_SHARE_LENGTH] = {0};
     uint16_t recovered_share[FRODO_N * FRODO_BAR_N] = {0};
 
+    // Non random seed for testing purposes
     for (int i=0; i<100; i++)
     {
         rng_seed[i] = i;

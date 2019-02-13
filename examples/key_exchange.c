@@ -20,12 +20,14 @@
 #include "frodo.h"
 
 #define PRINT_BYTE_ARRAY(k, s) for(int i = 0; i < s; i++) printf("%02X", k[i]);
+#define MEMORY_CLEAN(v, len) for(int i = 0; i < len; i++) v[i]=0;
 
 int main()
 {
     FRODO_CSPRNG RNG;
     char seed[100];
 
+    // Non random seed for testing purposes
     for (int i=0;i<100;i++)
         seed[i] = i;
     RAND_seed(&RNG,100,seed);
@@ -76,4 +78,10 @@ int main()
     	printf("%02X", key_left[i]^key_right[i]);
     }
     printf("\n");
+
+    // Clean memory
+    MEMORY_CLEAN(key_left, FRODO_KEY_LENGTH);
+    MEMORY_CLEAN(key_right, FRODO_KEY_LENGTH);
+    FRODO_KEYPAIR_CLEAN(lk);
+    FRODO_KEYPAIR_CLEAN(rk);
 }

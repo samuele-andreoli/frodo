@@ -37,6 +37,8 @@ typedef struct {
    uint16_t public[FRODO_N][FRODO_BAR_N];
 } FRODO_right_keypair;
 
+#define FRODO_KEYPAIR_CLEAN(kp) for(int i = 0; i < FRODO_N * FRODO_BAR_N; i++) ((uint16_t*)kp.private)[i]=0;
+
 /* Keypair generation API */
 
 /** @brief Multiply the partial key shares and add the result to dst: dst += lr

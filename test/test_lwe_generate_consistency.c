@@ -32,6 +32,7 @@ int main()
     uint16_t sa_auto[FRODO_BAR_N][FRODO_N] = {0};
     uint16_t sa_man[FRODO_BAR_N][FRODO_N] = {0};
 
+    // Non random seed for testing purposes
     for (int i=0;i<100;i++)
         rng_seed[i] = i;
     RAND_seed(&RNG, 100, rng_seed);
