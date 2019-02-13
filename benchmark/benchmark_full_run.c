@@ -29,15 +29,27 @@ int main() {
     RAND_seed(&RNG,100,seed);
 
     printf("Benchmark protocol run\n\n");
-    FRODO_left_keypair lk = {0};
-    FRODO_right_keypair rk = {0};
 
     // Generate seed
     uint8_t param_seed[FRODO_SEED_LENGTH] = {0};
 
     // Generate keys
-    BENCHTEST("generate left keypair", FRODO_generate_left_keypair(&RNG, &lk, param_seed), 100);
-    BENCHTEST("generate right keypair", FRODO_generate_right_keypair(&RNG, &rk, param_seed), 100);
+    FRODO_left_keypair lk = {0};
+    FRODO_right_keypair rk = {0};
+
+    BENCHTEST("generate left keypair from seed", FRODO_generate_left_keypair(&RNG, &lk, param_seed), 100);
+    BENCHTEST("generate right keypair from seed", FRODO_generate_right_keypair(&RNG, &rk, param_seed), 100);
+
+    // Generate full parameter
+    uint16_t a[FRODO_N][FRODO_N];
+    BENCHTEST("generate parameter", FRODO_generate_a(a, param_seed), 100);
+
+    // Generate keys from full parameter
+    FRODO_left_keypair lk_full = {0};
+    FRODO_right_keypair rk_full = {0};
+
+    BENCHTEST("generate left keypair from parameter", FRODO_generate_left_keypair_full_param(&RNG, &lk_full, a), 100);
+    BENCHTEST("generate right keypair from parameter", FRODO_generate_right_keypair_full_param(&RNG, &rk_full, a), 100);
 
     // Pack right key
     uint8_t right_keyshare[FRODO_PACKED_SHARE_LENGTH] = {0};
