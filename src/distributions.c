@@ -155,7 +155,7 @@ int main() {
     char seed[100];
 
     for (int i=0;i<100;i++)
-        seed[i] = i*3;
+        seed[i] = i;
     RAND_seed(&RNG,100,seed);
 
     uint16_t samples[100000] = {0};
