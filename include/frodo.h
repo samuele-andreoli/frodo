@@ -41,61 +41,64 @@ typedef struct {
 
 /* Keypair generation API */
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Generate a left keypair (s, sa) from the parameter seed
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param RNG, csprng for key generation
+ * @param k, destination keypair. It must be initialised
+ * @param seed, the parameter seed
  */
 void FRODO_generate_left_keypair(FRODO_CSPRNG *RNG, FRODO_left_keypair *k, uint8_t seed[FRODO_SEED_LENGTH]);
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Generate a right keypair (s, as) from the parameter seed
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param RNG, csprng for key generation
+ * @param k, destination keypair. It must be initialised
+ * @param seed, the parameter seed
  */
 void FRODO_generate_right_keypair(FRODO_CSPRNG *RNG, FRODO_right_keypair *k, uint8_t seed[FRODO_SEED_LENGTH]);
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Generate a left keypair (s, sa) from the parameter
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param RNG, csprng for key generation
+ * @param k, destination keypair. It must be initialised
+ * @param a, the parameter
  */
 void FRODO_generate_left_keypair_full_param(FRODO_CSPRNG *RNG, FRODO_left_keypair *k, uint16_t a[FRODO_N][FRODO_N]);
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Generate a right keypair (s, as) from the parameter
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param RNG, csprng for key generation
+ * @param k, destination keypair. It must be initialised
+ * @param a, the parameter
  */
 void FRODO_generate_right_keypair_full_param(FRODO_CSPRNG *RNG, FRODO_right_keypair *k, uint16_t a[FRODO_N][FRODO_N]);
 
 /* Protocol run API */
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Pack the right keyshare for transmission
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param b, the target packed keyshare
+ * @param k, the keyshare to pack
  */
 void FRODO_right_keyshare_pack(uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_right_keypair *k);
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Perform the key agreement with a right keypair
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param key, the reonciled key
+ * @param u, the received packed left key share
+ * @param k, the right keypair
+ * @param hint, the hint for reconciliation
  */
 void FRODO_right_key_agreement(uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], FRODO_right_keypair *k, uint8_t hint[FRODO_HINT_LENGTH]);
 
-/** @brief Multiply the partial key shares and add the result to dst: dst += lr
+/** @brief Perform the key agreement with a left keypair
  *
- * @param dst, matrix to store the product. The result of lr is added to dst
- * @param l, left key share.
- * @param r, right key share
+ * @param RNG, the csprng for noise sampling
+ * @param key, the reonciled key
+ * @param u, the rdestination packed left keyshare for transmission
+ * @param hint, the destination hint for reconciliation
+ * @param b, the received packed right keyshare
+ * @param k, the right keypair
  */
 void FRODO_left_key_agreement(FRODO_CSPRNG *RNG, uint8_t key[FRODO_KEY_LENGTH], uint8_t u[FRODO_PACKED_SHARE_LENGTH], uint8_t hint[FRODO_HINT_LENGTH], uint8_t b[FRODO_PACKED_SHARE_LENGTH], FRODO_left_keypair *k);
 
