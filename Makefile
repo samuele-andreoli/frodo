@@ -11,8 +11,8 @@ FRODO_PARANOID := 4
 FRODO_CONFIGURATION := ${FRODO_RECOMMENDED}
 
 ## Optimization configuration
-MEMORY := MEMORY
-TIME := TIME
+MEMORY := 1
+TIME := 2
 OPTIMIZATION := ${MEMORY}
 
 ## Backend configuration
@@ -50,14 +50,17 @@ LIBRARY_PATH := $(shell echo ${LD_LIBRARY_PATH}):${MILAGRO_LIBRARY_PATH}:${FRODO
 
 ## Compilation options
 CC := gcc
+
+BASEFLAGS := -Wall -Werror -Wextra -pedantic
+
 ifeq ($(OPTIMIZATION),$(MEMORY))
-	CONFIG_FLAGS := -O2 -DFRODO_BACKEND=${BACKEND_MILAGRO} -DFRODO_CONFIGURATION=${FRODO_CONFIGURATION}
+	OFLAGS := -O2
 endif
 ifeq ($(OPTIMIZATION),$(TIME))
-	CONFIG_FLAGS := -O3 -DFRODO_BACKEND=${BACKEND_OPENSSL} -DFRODO_CONFIGURATION=${FRODO_CONFIGURATION}
+	OFLAGS := -O3
 endif
 
-BASEFLAGS := -Wall -Werror -Wextra -pedantic ${CONFIG_FLAGS}
+CFLAGS = ${BASEFLAGS} ${OFLAGS} -DFRODO_OPTIMIZATION=${OPTIMIZATION} -DFRODO_BACKEND=${BACKEND_MILAGRO} -DFRODO_CONFIGURATION=${FRODO_CONFIGURATION}
 
 ## Linker options
 MILAGRO_LINK_FLAGS := -L${MILAGRO_LIBRARY_PATH} -lamcl_core
@@ -124,19 +127,19 @@ ${BUILDDIR}/lib/${TARGET}.so: ${BUILD_OBJECTS}
 	@echo "Build shared lib $@"
 	@cp ${INCLUDEDIR}/* ${BUILDDIR}/include
 	@export C_INCLUDE_PATH=${INCLUDE_PATH}; \
-	 $(CC) -fPIC ${BASEFLAGS} ${LINK_FLAGS} $^ -shared -o $@
+	 $(CC) -fPIC ${CFLAGS} ${LINK_FLAGS} $^ -shared -o $@
 
 $(BUILD_OBJECTS): $(OBJDIR)/%.o: %.c
 	@mkdir -p $(@D)
 	@echo "Build object $@"
 	export C_INCLUDE_PATH=${INCLUDE_PATH}:${INCLUDEDIR}; \
-	 $(CC) -fPIC ${BASEFLAGS} ${LINK_FLAGS} -c $< -o $@
+	 $(CC) -fPIC ${CFLAGS} ${LINK_FLAGS} -c $< -o $@
 
 $(BINARIES): ${BINDIR}/%: %.c
 	@mkdir -p $(@D)
 	@echo "Build binary $@"
 	@export C_INCLUDE_PATH=${INCLUDE_PATH}:${BENCHDIR}; \
-	 $(CC) ${BASEFLAGS} $< ${FRODO_LINK_FLAGS} ${LINK_FLAGS} -o $@
+	 $(CC) ${CFLAGS} $< ${FRODO_LINK_FLAGS} ${LINK_FLAGS} -o $@
 
 
 # Testing rules
