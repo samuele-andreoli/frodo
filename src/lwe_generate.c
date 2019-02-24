@@ -38,8 +38,8 @@ void FRODO_generate_a(uint16_t a[FRODO_N][FRODO_N], uint8_t seed[FRODO_SEED_LENG
     {
         for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
         {
-            a[i][j]=i;
-            a[i][j+1]=j;
+            a[i][j] = i;
+            a[i][j+1] = j;
         }
     }
 
@@ -47,7 +47,7 @@ void FRODO_generate_a(uint16_t a[FRODO_N][FRODO_N], uint8_t seed[FRODO_SEED_LENG
     // It only fails with exit code if the key has an invalid length,
     // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
     FRODO_AES_INIT(&aes_ctx, seed, FRODO_SEED_LENGTH);
-    FRODO_AES_ENCRYPT(&aes_ctx, a, a_len);
+    FRODO_AES_ENCRYPT_BUFFER(&aes_ctx, a, a_len);
 
     // No need to clean AES, as the seed for the parameter a is public
 }
@@ -98,10 +98,11 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
 
     for(i=0; i<FRODO_N; i++)
     {
+#if FRODO_OPTIMIZATION==FRODO_OPTIMIZE_MEMORY
         for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
         {
             INIT_STRIPE(stripe, i, j);
-            FRODO_AES_ENCRYPT(&aes_ctx, stripe, FRODO_SEED_LENGTH);
+            FRODO_AES_ENCRYPT_SINGLE(&aes_ctx, stripe);
 
             for(k=0; k<FRODO_A_STRIPE_LEN; k++)
             {
@@ -111,6 +112,24 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
                 }
             }
         }
+#elif FRODO_OPTIMIZATION==FRODO_OPTIMIZE_TIME
+        uint16_t row[FRODO_N] = {0};
+        for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
+        {
+            row[j] = i;
+            row[j+1] = j;
+        }
+
+        FRODO_AES_ENCRYPT_BUFFER(&aes_ctx, row, 2 * FRODO_N);
+
+        for(k=0; k<FRODO_N; k++)
+        {
+            for(l=0; l<FRODO_BAR_N; l++)
+            {
+                dst[i][l]+=(uint16_t)(row[k]*s[k][l]);
+            }
+        }
+#endif
     }
 
     // No need to clean AES, as the seed for the parameter a is public
@@ -119,20 +138,26 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
 void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint16_t s[FRODO_BAR_N][FRODO_N], uint8_t seed[FRODO_SEED_LENGTH])
 {
     FRODO_AES_CTX aes_ctx;
-    uint16_t i, j, k, l;
+    uint16_t i, j, k;
+#if FRODO_OPTIMIZATION==FRODO_OPTIMIZE_MEMORY
+    //uint16_t l;
     uint16_t pos_l;
+#elif FRODO_OPTIMIZATION==FRODO_OPTIMIZE_TIME
+    uint16_t col[FRODO_BAR_N];
+#endif
 
     // Willingly ignore the exit code
     // It only fails with exit code if the key has an invalid length,
     // but FRODO_SEED_LENGTH is checked to be valid at compile time in the header file
     FRODO_AES_INIT(&aes_ctx, seed, FRODO_SEED_LENGTH);
 
-    for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
+    for(i=0; i<FRODO_N; i++)
     {
-        for(i=0; i<FRODO_N; i++)
+#if FRODO_OPTIMIZATION==FRODO_OPTIMIZE_MEMORY
+        for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
         {
             INIT_STRIPE(stripe, i, j);
-            FRODO_AES_ENCRYPT(&aes_ctx, stripe, FRODO_SEED_LENGTH);
+            FRODO_AES_ENCRYPT_SINGLE(&aes_ctx, stripe);
 
             pos_l = 0;
             for(l=0; l<FRODO_BAR_N; l++)
@@ -144,6 +169,29 @@ void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint1
                 pos_l += FRODO_N;
             }
         }
+#elif FRODO_OPTIMIZATION==FRODO_OPTIMIZE_TIME
+        uint16_t row[FRODO_N] = {0};
+        for(j=0; j<FRODO_N; j+=FRODO_A_STRIPE_LEN)
+        {
+            row[j] = i;
+            row[j+1] = j;
+        }
+
+        FRODO_AES_ENCRYPT_BUFFER(&aes_ctx, row, 2 * FRODO_N);
+
+        for(k=0; k<FRODO_BAR_N; k++)
+        {
+            col[k] = s[k][i];
+        }
+
+        for(k=0; k<FRODO_BAR_N; k++)
+        {
+            for(j=0; j<FRODO_N; j++)
+            {
+                dst[k][j]+=(uint16_t)(row[j]*col[k]);
+            }
+        }
+#endif
     }
 
     // No need to clean AES, as the seed for the parameter a is public
@@ -202,7 +250,7 @@ int main()
     {
         for(int j=0; j<FRODO_N; j++)
         {
-            fprintf(data, "%x ", a[i][j]);
+            fprintf(data, "%04X ", a[i][j]);
         }
         fprintf(data, "\n");
     }
@@ -218,7 +266,7 @@ int main()
     {
         for(int j=0; j<FRODO_N; j++)
         {
-            fprintf(data, "%d ", sa_auto[i][j]);
+            fprintf(data, "%04X ", sa_auto[i][j]);
         }
         fprintf(data, "\n");
     }
@@ -250,7 +298,7 @@ int main()
     {
         for(int j=0; j<FRODO_BAR_N; j++)
         {
-            fprintf(data, "%d ", as_auto[i][j]);
+            fprintf(data, "%04X ", as_auto[i][j]);
         }
         fprintf(data, "\n");
     }

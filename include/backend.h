@@ -44,9 +44,12 @@
 #define FRODO_AES_INIT(aes_ctx_ptr, seed, seed_len)\
     AES_init(aes_ctx_ptr, ECB, seed_len, (char*)seed, NULL);
 
-#define FRODO_AES_ENCRYPT(aes_ctx_ptr, buf, buf_len)\
+#define FRODO_AES_ENCRYPT_SINGLE(aes_ctx_ptr, buf)\
+    AES_ecb_encrypt(aes_ctx_ptr, (uchar*)buf);
+
+#define FRODO_AES_ENCRYPT_BUFFER(aes_ctx_ptr, buf, buf_len)\
     for (int i = 0; i < buf_len; i+=16)\
-    AES_ecb_encrypt(aes_ctx_ptr, ((uchar*)buf)+i);
+    	AES_ecb_encrypt(aes_ctx_ptr, ((uchar*)buf)+i);
 
 #elif FRODO_BACKEND==FRODO_BACKEND_OPENSSL
 
@@ -106,7 +109,12 @@ extern int RAND_byte(csprng *R);
     EVP_EncryptInit_ex(*aes_ctx_ptr, EVP_aes_128_ecb(), NULL, seed, NULL);\
 	EVP_CIPHER_CTX_set_padding(*aes_ctx_ptr, 0);
 
-#define FRODO_AES_ENCRYPT(aes_ctx_ptr, buf, buf_len)\
+#define FRODO_AES_ENCRYPT_SINGLE(aes_ctx_ptr, buf)\
+	int tmp_buf_len;\
+	EVP_EncryptUpdate(*aes_ctx_ptr, (unsigned char *)buf, &tmp_buf_len, (unsigned char *)buf, 16);\
+	EVP_EncryptFinal_ex(*aes_ctx_ptr, (unsigned char *)buf, &tmp_buf_len);
+
+#define FRODO_AES_ENCRYPT_BUFFER(aes_ctx_ptr, buf, buf_len)\
 	int tmp_buf_len;\
 	EVP_EncryptUpdate(*aes_ctx_ptr, (unsigned char *)buf, &tmp_buf_len, (unsigned char *)buf, buf_len);\
 	EVP_EncryptFinal_ex(*aes_ctx_ptr, (unsigned char *)buf, &tmp_buf_len);
