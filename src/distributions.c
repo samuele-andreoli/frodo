@@ -81,7 +81,7 @@ typedef struct __attribute__((__packed__)){
 #endif
 
 
-/* Auxiliary macros for inverse sampling*/
+/* Auxiliary macros for inverse sampling */
 
 // Constant time conditional (on b) flip of the sign of x */
 #define FRODO_I_SAMPLE_SIGN(x,b) ((-b)^x)+b

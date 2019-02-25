@@ -20,18 +20,19 @@
 #include <time.h>
 #include "frodo.h"
 
-float start, end;
+float start, total;
 
 #define BENCHTEST(name, func, iterations) \
     printf("------------------------------------------------------------\n"); \
     printf("Benchmark %s\n", name); \
-    start = (float)clock(); \
+    total = 0;\
     for(int i = 0; i < iterations; i++) \
     { \
+        start = (float)clock(); \
         func; \
+        total += (float)clock() - start;\
     } \
-    end = (float)clock(); \
-    printf("Time elapsed %f\n", (end-start)/CLOCKS_PER_SEC); \
+    printf("Time elapsed %f\n", total/CLOCKS_PER_SEC); \
     printf("Iterations %d\n", iterations); \
-    printf("Time per iteration %lfms\n", (end-start) * 1000 / (CLOCKS_PER_SEC * iterations)); \
+    printf("Time per iteration %lfms\n", total * 1000 / (CLOCKS_PER_SEC * iterations)); \
     printf("------------------------------------------------------------\n");
