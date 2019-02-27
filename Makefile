@@ -158,11 +158,11 @@ $(TEST_TARGETS): ${BINDIR}/%.test: ${BINDIR}/%
 	@echo "------------------------------------------------------------"
 	@echo "  Run $<"
 	@echo "  $<" >> ${TEST_REPORT}
-	@export LD_LIBRARY_PATH=${LIBRARY_PATH}; ./$< >> ${TEST_REPORT} &&												\
+	@export LD_LIBRARY_PATH=${LIBRARY_PATH}; ./$< >> ${TEST_REPORT} && \
 	(echo "    - Test successful"; echo "    - Test successful" >> ${TEST_REPORT};) || \
 	(echo "    - Test failed"; echo "    - Test failed" >> ${TEST_REPORT};)
 
-# Testing
+# Benchmarking rules
 .PHONY: bench bench_header
 
 bench: cleanbench bench_header $(BENCH_TARGETS)
@@ -232,7 +232,7 @@ cleanbench:
 
 cleandepall: cleandep cleandepsrc cleandepinstall
 
-cleandep: cleandepbuild cleandepinstall
+cleandep: cleandepbuild
 	-rm -rf ${MILAGRO_BUILDDIR}
 
 cleandepinstall:
