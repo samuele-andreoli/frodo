@@ -31,6 +31,6 @@
  * @param samples, array to store the generated samples. It MUST be zeroed
  * @param n_samples, number of samples to generate. n_samples must be even
  */
-void FRODO_inverse_sample(csprng* RNG, uint16_t* samples, size_t n_samples);
+void FRODO_inverse_sample(FRODO_CSPRNG* RNG, uint16_t* samples, size_t n_samples);
 
 #endif

@@ -19,7 +19,7 @@
 
 #include "distributions.h"
 
-#define N_SAMPLES 100000
+#define N_SAMPLES 1 << 12
 
 #if FRODO_DISTRIBUTION == FRODO_D1
 #define CHI_TH 24.332

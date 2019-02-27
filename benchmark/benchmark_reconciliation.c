@@ -42,7 +42,6 @@ int main() {
 
     // Regular econciliation
     uint8_t key[FRODO_KEY_LENGTH] = {0};
-    FRODO_reconcilitaion(key, (uint16_t*)m);
 
     BENCHTEST("plain reconciliation", FRODO_reconcilitaion(key, (uint16_t*)m), 10000000);
 
