@@ -9,15 +9,32 @@ C implementation of the FRODO post quantum secure key exchange.
 
 ## Dependencies
 In order to build this library you need the following dependencies:
- * The [milagro-crypto-c](https://github.com/milagro-crypto/milagro-crypto-c) library
+ * The [milagro-crypto-c](https://github.com/apache/incubator-milagro-crypto-c.git) library
+ * [OpenSSL](https://github.com/openssl/openssl)
 
-They are automatically resolved when making the project.
+The milagro-crypto-c dependency is automatically resolved when making the project.
 
 ## Build
 You can build the project running the command
 ```
-$ make
+$ make build
 ```
+
+#### Build configuration
+The build can be configured using a few flags.
+* BACKEND allows to specify the crypto library to use as backend. The supported backends are milagro-crypto-c [1] and OpenSSL [2]
+* OPTIMIZATION allows to specify if the library should be optimized for memory usage [1] or speed [2]
+* FRODO_CONFIGURATION allows to specify the desired configuration for Frodo: TOY [1], CLASSIC [2], RECOMMENDED [3] or PARANOID [4]
+
+Additional configurations are listed in the `Configuration` section of the Makefile
+
+## Install
+You can install the project running the command
+```
+$ make install
+```
+
+The default path for install is `install/`
 
 ## Test
 You can run the tests for the project running the command
@@ -34,6 +51,13 @@ make bench
 ```
 
 The benchmark report will be saved in the file `benchmark_report.txt` in the project root directory
+
+## Run examples
+In order to run the examples you need to add milagro and frodo to your dynamic linker path. Assuming you are using ld as linker, you can use
+
+```
+LD_LIBRARY_PATH=../install/amcl/lib:../install/frodo/lib:${LD_LIBRARY_PATH}
+```
 
 ## Build individual files as executable
 Individual files in src/ can be compiled into an executable.
