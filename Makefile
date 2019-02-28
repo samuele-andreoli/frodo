@@ -36,14 +36,13 @@ BINDIR := ${BUILDDIR}/bin
 ## External dependencies
 
 # Milagro
-MILAGRO_URL := https://github.com/milagro-crypto/milagro-crypto-c.git
+MILAGRO_URL := https://github.com/apache/incubator-milagro-crypto-c.git
 MILAGRO_SRCDIR := ${BASEDIR}/milagro-crypto-c
 MILAGRO_BUILDDIR := ${MILAGRO_SRCDIR}/target/aes
 MILAGRO_INSTALLDIR := ${BASEDIR}/${INSTALLDIR}/amcl
-MILAGRO_VERSION := 4.12.0
 
 # Library paths
-MILAGRO_INCLUDE_PATH := ${MILAGRO_INSTALLDIR}/include
+MILAGRO_INCLUDE_PATH := ${MILAGRO_INSTALLDIR}/include/amcl
 MILAGRO_LIBRARY_PATH := ${MILAGRO_INSTALLDIR}/lib
 FRODO_INCLUDE_PATH := ${BASEDIR}/${BUILDDIR}/include
 FRODO_LIBRARY_PATH := ${BASEDIR}/${BUILDDIR}/lib
@@ -197,7 +196,6 @@ ${MILAGRO_INSTALLDIR}: ${MILAGRO_BUILDDIR}
 ${MILAGRO_BUILDDIR}: ${MILAGRO_SRCDIR}
 	mkdir -p ${MILAGRO_INSTALLDIR}
 	cd ${MILAGRO_SRCDIR};			\
-	git checkout ${MILAGRO_VERSION};\
 	mkdir -p ${MILAGRO_BUILDDIR};	\
 	cd ${MILAGRO_BUILDDIR};			\
 	cmake -DCMAKE_C_FLAGS=-O3 -DWORD_SIZE=64 -DAMCL_CURVE= -DAMCL_RSA= -DCMAKE_INSTALL_PREFIX=${MILAGRO_INSTALLDIR} ${MILAGRO_SRCDIR}
@@ -212,7 +210,7 @@ ${MILAGRO_SRCDIR}:
 cleanall: cleandepall clean
 
 # Clean build files, examples and dependencies
-clean: cleandep cleanbuild
+clean: cleandep cleanbuild cleanbench
 	-rm -rf ${BUILDDIR}
 
 # Clean build files
@@ -242,4 +240,4 @@ cleandepbuild:
 	-rm -rf ${MILAGRO_BUILDDIR}
 
 cleandepsrc:
-	-rm -rf ${MILAGRO_DIR}
+	-rm -rf ${MILAGRO_SRCDIR}
