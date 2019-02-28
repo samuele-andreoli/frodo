@@ -52,15 +52,20 @@ void FRODO_generate_a(uint16_t a[FRODO_N][FRODO_N], uint8_t seed[FRODO_SEED_LENG
 // dst = dst + sa
 void FRODO_parameter_left_mul(uint16_t dst[FRODO_BAR_N][FRODO_N], uint16_t s[FRODO_BAR_N][FRODO_N], uint16_t a[FRODO_N][FRODO_N])
 {
-    uint16_t i, j, k;
+    uint16_t i, j, k, col[FRODO_BAR_N];
 
-    for(i=0; i<FRODO_BAR_N; i++)
+    for(k=0; k<FRODO_N; k++)
     {
-        for(k=0; k<FRODO_N; k++)
+        for(i=0; i<FRODO_BAR_N; i++)
+        {
+            col[i] = s[i][k];
+        }
+
+        for(i=0; i<FRODO_BAR_N; i++)
         {
             for(j=0; j<FRODO_N; j++)
             {
-                dst[i][j]+=s[i][k]*a[k][j];
+                dst[i][j]+=col[i]*a[k][j];
             }
         }
     }
@@ -86,7 +91,10 @@ void FRODO_parameter_right_mul(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t s[FR
 void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t s[FRODO_N][FRODO_BAR_N], uint8_t seed[FRODO_SEED_LENGTH])
 {
     FRODO_AES_CTX aes_ctx;
-    uint16_t i, j, k, l;
+    uint16_t i, j, k;
+#if FRODO_OPTIMIZATION==FRODO_OPTIMIZE_MEMORY
+    uint16_t l;
+#endif
 
     FRODO_AES_ECB_INIT(&aes_ctx, seed);
 
@@ -118,9 +126,9 @@ void FRODO_generate_multiply_by_row(uint16_t dst[FRODO_N][FRODO_BAR_N], uint16_t
 
         for(k=0; k<FRODO_N; k++)
         {
-            for(l=0; l<FRODO_BAR_N; l++)
+            for(j=0; j<FRODO_BAR_N; j++)
             {
-                dst[i][l]+=(uint16_t)(row[k]*s[k][l]);
+                dst[i][j]+=(uint16_t)(row[k]*s[k][j]);
             }
         }
 #endif
@@ -135,7 +143,6 @@ void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint1
     uint16_t i, j, k;
 #if FRODO_OPTIMIZATION==FRODO_OPTIMIZE_MEMORY
     uint16_t l;
-    uint16_t pos_l;
 #elif FRODO_OPTIMIZATION==FRODO_OPTIMIZE_TIME
     uint16_t col[FRODO_BAR_N];
 #endif
@@ -150,14 +157,12 @@ void FRODO_generate_multiply_by_column(uint16_t dst[FRODO_BAR_N][FRODO_N], uint1
             INIT_STRIPE(stripe, i, j);
             FRODO_AES_ECB_ENCRYPT_SINGLE(&aes_ctx, stripe);
 
-            pos_l = 0;
             for(l=0; l<FRODO_BAR_N; l++)
             {
                 for(k=0; k<FRODO_A_STRIPE_LEN; k++)
                 {
-                    ((uint16_t*)dst)[pos_l + j + k]+=(uint16_t)(stripe[k]*((uint16_t*) s)[pos_l + i]);
+                    dst[l][j + k]+=(uint16_t)(stripe[k]*s[l][i]);
                 }
-                pos_l += FRODO_N;
             }
         }
 #elif FRODO_OPTIMIZATION==FRODO_OPTIMIZE_TIME

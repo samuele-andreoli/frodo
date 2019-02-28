@@ -37,9 +37,9 @@ void FRODO_key_mul(uint16_t dst[FRODO_BAR_N][FRODO_BAR_N], uint16_t l[FRODO_BAR_
 {
    for(int i=0;i<FRODO_BAR_N;i++)
    {
-      for(int j=0;j<FRODO_BAR_N;j++)
+      for(int k=0;k<FRODO_N;k++)
       {
-         for(int k=0;k<FRODO_N;k++)
+         for(int j=0;j<FRODO_BAR_N;j++)
          {
             dst[i][j]+=l[i][k]*r[k][j];
          }
