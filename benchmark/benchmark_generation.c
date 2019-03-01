@@ -19,13 +19,16 @@
 
 #include "benchmark.h"
 
+// Buffer for time measurements
+float times[100];
+
 int main() {
     printf("Benchmark parameter and key generation\n\n");
 
     // Seed RNG
     FRODO_CSPRNG RNG;
     char rng_seed[100];
-    
+
     // Non random seed for testing purposes
     for (int i=0; i<100; i++)
         rng_seed[i] = i;
@@ -54,21 +57,21 @@ int main() {
     // Generate parameter
     uint16_t a[FRODO_N][FRODO_N] = {0};
 
-    BENCHTEST("generate parameter", FRODO_generate_a(a, param_seed), 100);
+    BENCHTEST("generate parameter", FRODO_generate_a(a, param_seed), 100, times);
 
     // Generation on the fly
     uint16_t as_auto[FRODO_N][FRODO_BAR_N] = {0};
     uint16_t sa_auto[FRODO_BAR_N][FRODO_N] = {0};
 
-    BENCHTEST("generate and multiply by row", FRODO_generate_multiply_by_row(as_auto, sr, param_seed), 100);
-    BENCHTEST("generate and multiply by column", FRODO_generate_multiply_by_column(sa_auto, sl, param_seed), 100);
+    BENCHTEST("generate and multiply by row", FRODO_generate_multiply_by_row(as_auto, sr, param_seed), 100, times);
+    BENCHTEST("generate and multiply by column", FRODO_generate_multiply_by_column(sa_auto, sl, param_seed), 100, times);
 
     // Generation from parameter
     uint16_t as_man[FRODO_N][FRODO_BAR_N] = {0};
     uint16_t sa_man[FRODO_BAR_N][FRODO_N] = {0};
 
-    BENCHTEST("multiply by row", FRODO_parameter_right_mul(as_man, sr, a), 100);
-    BENCHTEST(" multiply by column", FRODO_parameter_left_mul(sa_man, sl, a), 100);
+    BENCHTEST("multiply by row", FRODO_parameter_right_mul(as_man, sr, a), 100, times);
+    BENCHTEST(" multiply by column", FRODO_parameter_left_mul(sa_man, sl, a), 100, times);
 
     return 0;
 }

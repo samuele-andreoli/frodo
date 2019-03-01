@@ -19,6 +19,9 @@
 
 #include "benchmark.h"
 
+// Buffer for time measurements
+float times[1000000];
+
 int main() {
     FRODO_CSPRNG RNG;
     char seed[100];
@@ -43,14 +46,14 @@ int main() {
     // Regular econciliation
     uint8_t key[FRODO_KEY_LENGTH] = {0};
 
-    BENCHTEST("plain reconciliation", FRODO_reconcilitaion(key, (uint16_t*)m), 1000000);
+    BENCHTEST("plain reconciliation", FRODO_reconcilitaion(key, (uint16_t*)m), 1000000, times);
 
     // Reconciliation with hint
     uint8_t hint[FRODO_HINT_LENGTH] = {0};
     uint8_t key_with_hint[FRODO_KEY_LENGTH] = {0};
 
-    BENCHTEST("hint computation", FRODO_hint(hint, (uint16_t*)m), 1000000);
-    BENCHTEST("reconciliation with hint", FRODO_reconcilitaion_with_hint(key_with_hint, hint, (uint16_t*)m), 1000000);
+    BENCHTEST("hint computation", FRODO_hint(hint, (uint16_t*)m), 1000000, times);
+    BENCHTEST("reconciliation with hint", FRODO_reconcilitaion_with_hint(key_with_hint, hint, (uint16_t*)m), 1000000, times);
 
     return 0;
 }

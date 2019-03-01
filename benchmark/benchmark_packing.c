@@ -19,25 +19,38 @@
 
 #include "benchmark.h"
 
-#define N_SAMPLES 752 * 8
-
 // Buffer for time measurements
-float times[N_SAMPLES];
+float times[1000];
 
 int main() {
     FRODO_CSPRNG RNG;
     char seed[100];
 
     // Non random seed for testing purposes
-    for (int i=0;i<100;i++)
+    for (int i=0; i<100; i++)
         seed[i] = i;
     RAND_seed(&RNG,100,seed);
 
-    printf("Benchmark distributions\n\n");
+    printf("Benchmark packing\n\n");
 
-    uint16_t samples[N_SAMPLES] = {0};
+    uint16_t share[FRODO_N * FRODO_BAR_N] = {0};
+    uint8_t packed[FRODO_PACKED_SHARE_LENGTH] = {0};
+    uint16_t recovered_share[FRODO_N * FRODO_BAR_N] = {0};
 
-    BENCHTEST("inverse sample", FRODO_inverse_sample(&RNG, samples, N_SAMPLES), 1000, times);
+    for(int i = 0; i < FRODO_N * FRODO_BAR_N; i++)
+    {
+        share[i] = ((uint16_t)RAND_byte(&RNG) << 8) | ((uint16_t)RAND_byte(&RNG));
+    }
+
+    // Pack and unpack
+    FRODO_pack_share(packed, share);
+    FRODO_unpack_share(recovered_share, packed);
+
+    // Packing
+    BENCHTEST("packing", FRODO_pack_share(packed, share);, 1000, times);
+
+    // Unpacking
+    BENCHTEST("unpacking", FRODO_unpack_share(recovered_share, packed);, 1000, times);
 
     return 0;
 }

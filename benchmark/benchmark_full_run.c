@@ -19,6 +19,9 @@
 
 #include "benchmark.h"
 
+// Buffer for time measurements
+float times[10000];
+
 int main() {
     FRODO_CSPRNG RNG;
     char seed[100];
@@ -37,36 +40,36 @@ int main() {
     FRODO_left_keypair lk = {0};
     FRODO_right_keypair rk = {0};
 
-    BENCHTEST("generate left keypair from seed", FRODO_generate_left_keypair(&RNG, &lk, param_seed), 100);
-    BENCHTEST("generate right keypair from seed", FRODO_generate_right_keypair(&RNG, &rk, param_seed), 100);
+    BENCHTEST("generate left keypair from seed", FRODO_generate_left_keypair(&RNG, &lk, param_seed), 100, times);
+    BENCHTEST("generate right keypair from seed", FRODO_generate_right_keypair(&RNG, &rk, param_seed), 100, times);
 
     // Generate full parameter
     uint16_t a[FRODO_N][FRODO_N];
-    BENCHTEST("generate parameter", FRODO_generate_a(a, param_seed), 100);
+    BENCHTEST("generate parameter", FRODO_generate_a(a, param_seed), 100, times);
 
     // Generate keys from full parameter
     FRODO_left_keypair lk_full = {0};
     FRODO_right_keypair rk_full = {0};
 
-    BENCHTEST("generate left keypair from parameter", FRODO_generate_left_keypair_full_param(&RNG, &lk_full, a), 100);
-    BENCHTEST("generate right keypair from parameter", FRODO_generate_right_keypair_full_param(&RNG, &rk_full, a), 100);
+    BENCHTEST("generate left keypair from parameter", FRODO_generate_left_keypair_full_param(&RNG, &lk_full, a), 100, times);
+    BENCHTEST("generate right keypair from parameter", FRODO_generate_right_keypair_full_param(&RNG, &rk_full, a), 100, times);
 
     // Pack right key
     uint8_t right_keyshare[FRODO_PACKED_SHARE_LENGTH] = {0};
 
-    BENCHTEST("pack right keyshare", FRODO_right_keyshare_pack(right_keyshare, &rk), 10000);
+    BENCHTEST("pack right keyshare", FRODO_right_keyshare_pack(right_keyshare, &rk), 10000, times);
 
     // Perform left keyshare
     uint8_t key_left[FRODO_KEY_LENGTH] = {0};
     uint8_t left_keyshare[FRODO_PACKED_SHARE_LENGTH] = {0};
     uint8_t hint[FRODO_HINT_LENGTH] = {0};
 
-    BENCHTEST("left key agreement", FRODO_left_key_agreement(&RNG, key_left, left_keyshare, hint, right_keyshare, &lk), 10000);
+    BENCHTEST("left key agreement", FRODO_left_key_agreement(&RNG, key_left, left_keyshare, hint, right_keyshare, &lk), 10000, times);
 
     // Perform right keyshare
     uint8_t key_right[FRODO_KEY_LENGTH] = {0};
 
-    BENCHTEST("right key agreement", FRODO_right_key_agreement(key_right, left_keyshare, &rk, hint), 10000);
+    BENCHTEST("right key agreement", FRODO_right_key_agreement(key_right, left_keyshare, &rk, hint), 10000, times);
 
     return 0;
 }

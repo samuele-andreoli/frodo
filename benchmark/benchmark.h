@@ -18,11 +18,12 @@
  */
 
 #include <time.h>
+#include <math.h>
 #include "frodo.h"
 
-float start, total;
+float start, total, mean, var;
 
-#define BENCHTEST(name, func, iterations) \
+#define BENCHTEST(name, func, iterations, times) \
     printf("------------------------------------------------------------\n"); \
     printf("Benchmark %s\n", name); \
     total = 0;\
@@ -30,9 +31,17 @@ float start, total;
     { \
         start = (float)clock(); \
         func; \
-        total += (float)clock() - start;\
+        times[i] = (float)clock() - start; \
+        total += times[i]; \
     } \
     printf("Time elapsed %f\n", total/CLOCKS_PER_SEC); \
     printf("Iterations %d\n", iterations); \
-    printf("Time per iteration %lfms\n", total * 1000 / (CLOCKS_PER_SEC * iterations)); \
+    mean = total / iterations; \
+    printf("Time per iteration %lfus\n", mean * 1000000 / CLOCKS_PER_SEC); \
+    for(int i = 0; i < iterations; i++) \
+    { \
+        var += (times[i]-mean) * (times[i] - mean); \
+    } \
+    var = sqrt(var) / (iterations -1);\
+    printf("Population variance %lfus\n", var * 1000000 / CLOCKS_PER_SEC); \
     printf("------------------------------------------------------------\n");
