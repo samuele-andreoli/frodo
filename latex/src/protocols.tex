@@ -116,9 +116,6 @@ $\nu\leftarrow$\verb|Rec|$(\textbf{v'},\textbf{r})$&$\nu\leftarrow$\verb|Rec|$(\
 $\mu\leftarrow$\verb|SHA3-256|$(\nu)$&$\mu\leftarrow$\verb|SHA3-256|$(\nu)$\\
 \end{protocol}
 
-%\subsection{Security analysis}
-% TODO
-
 \section{Going back to LWE}
 As mentioned before, RLWE was welcomed as a way to mitigate many of the shortcomings of cryptographic primitives based on the generic LWE problem, namely the memory required to store protocol parameters and private keys, and the bandwidth necessary to transmit said parameters and the public keys, especially when a fresh parameter \textbf{a} is generated for each instance of the protocol.\\
 On the other hand, the additional structure in ideal lattices, provided by the ring, may enable attacks not viable in the context of generic lattices. Some attacks that exploit the ring structure already exist, although they are limited to some parameter choices, and only shave a few bits off the total security provided by the RLWE problem\footnote{A quite comprehensive recap of attacks on the LWE and RLWE problem can be found in \cite{RLWE_attacks}}. Still, the lack of practical attacks exploiting the ring structure in a catastrophic way should not put our minds to rest, as the cryptanalysis on the LWE and RLWE problems is still in its early stages.\\
@@ -256,6 +253,3 @@ $(seed,\textbf{b})\rightarrow$&$\textbf{a}\leftarrow$ \verb|Gen|$(seed)$\\
 $\textbf{v'}\leftarrow\textbf{us}$&$\leftarrow(\textbf{u},\textbf{r})$\\
 $\nu\leftarrow$\verb|Rec|$(\textbf{v'},\textbf{r})$&$\nu\leftarrow\lfloor\textbf{v}\rceil_{2^B}$\\
 \end{protocol}
-
-%\subsection{Security Analysis}\label{sec:fr:sec_analysis}
-% TODO
