@@ -1,11 +1,11 @@
 In this chapter are presented the two main PQKE topic of this dissertation, New Hope, presented in \cite{newhope} by Alkim, Ducas, P{\"o}ppelmann and Schwabe, and Frodo, presented in \cite{frodo} by Bos, Costello, Ducas, Mironov, Naehrig, Nikolaenko, Raghunathan and Stebila with some consideration on their practicality.
 
 \section{New Hope}
-In the New Hope paper\cite{newhope}, the authors present some solutions to performance and security issues of the BCNS proposal \cite{BCNS} of an Unauthenticated Post Quantum Key Exchange suitable for use in the TLS cipher suite, deriving the New Hope protocol. \\
+In the New Hope paper \cite{newhope}, the authors present some solutions to performance and security issues of the BCNS proposal \cite{BCNS} of an Unauthenticated Post Quantum Key Exchange suitable for use in the TLS cipher suite, deriving the New Hope protocol. \\
 As far as performance are concerned, the main improvements are a change in the error distribution, from Gaussian, to a much easier to sample Binomial, the use of a new lattice for error reconciliation, that allows for better error correction, and a drastic drop in the size of the modulus \textit{q}, and finally the use of an encoding for polynomials in the NTT\footnote{More about this in Section \ref{sec:nh:ntt}} domain, which allows to take advantage of the quasi linear product in the NTT domain, while skipping some of the NTT transforms that would usually be necessary.\\
 As for security, the authors notice that fixing the parameter \textbf{a} creates an opportunity for an all-for-the-price-of-one attack, and advice to make it ephemeral in order to avoid such risk.\\
 Moreover, the authors present a comprehensive security analysis, assessing the security level of the protocol to be comfortably over 128 bit.\\
-Let's take the time to go through the proposed changes and examine each of them in detail.
+Let us take the time to go through the proposed changes and examine each of them in detail.
 
 \subsection{Error Distribution}
 Previous proposals were considerably burdened by the choice of a Gaussian noise distribution, which is notoriously hard to sample. The authors of New Hope opt for a much easier to sample Binomial distribution $\Psi_k$ of parameter $k=16$. Such distribution is really easy to sample from a stream of uniform i.i.d. random bits, which is commonly available on modern machines. \\
@@ -64,11 +64,11 @@ Indeed, considering that $\mathbf{u}_0,\mathbf{u}_1,\mathbf{u}_2,2\mathbf{g} \in
 \subsubsection{Reconciliation}
 Finally, all of the ingredients for the reconciliation mechanism are in place. The closest vector any $\mathbf{x}\in\mathbb{R}$ can be computed using the $CVP_{\tilde{D}_4}$ algorithm, described in Algorithm \ref{alg:nh:CVP}, and with this the r-bit reconciliation function \verb|HelpRec| can be defined as 
 \begin{equation}
-CVP_{\tilde{D}_4}\left(\frac{2^r}{q}(\mathbf{x}+b\mathbf{g})\right) mod 2^r, where \xleftarrow{\$}U[\{0,1\}]
+CVP_{\tilde{D}_4}\left(\frac{2^r}{q}(\mathbf{x}+b\mathbf{g})\right)\text{ }\mathrm{mod}\text{ }2^r, where \xleftarrow{\$}U[\{0,1\}].
 \end{equation}
-Let's call $\mathbf{r}$ the output of the reconciliation function. The final extracted bits can then be computed as 
+Let us call $\mathbf{r}$ the output of the reconciliation function. The final extracted bits can then be computed as 
 \begin{equation}
-\verb|Decode|\left(\frac{1}{q}\mathbf{x}-\mathbf{Br}\right) 
+\verb|Decode|\left(\frac{1}{q}\mathbf{x}-\mathbf{Br}\right).
 \end{equation}
 Applying this algorithm to the polynomial split computed above, the full key can be recovered.\\
 The vector $r$, output of the \verb|HelpRec| function, will then be transmitted to the other party, allowing it to apply the final reconciliation to its polynomial split, thus recovering the same key.
@@ -76,11 +76,11 @@ The vector $r$, output of the \verb|HelpRec| function, will then be transmitted 
 %\subsection{Failure rate}
 % TODO
 
-\subsection{Generation of \textbf{a}}\label{sec:nh:a_generation}
+\subsection{Generation of the parameter \textbf{a}}\label{sec:nh:a_generation}
 The parameter \textbf{a} was made ephemeral, in order to avoid all-for-the-price-of-one attacks and parameter manipulation\footnote{For example, the parameter \textbf{a} can be trapdoored, as described in \cite{RLWE_trapdoor} and \cite{newhope}}. Generating a fresh \textbf{a} for each run of the protocol, opens two problems. The generation of \textbf{a} is computationally somewhat costly, and the generated parameter has to be transmitted to the other party of the key exchange, posing a bandwidth problem.\\
 The former issue can be mitigated by caching the parameter \textbf{a} for multiple instances of the protocol, since it has only a marginal effect on the resilience against all-for-the-price-of-one attack. As we can see in Protocol \ref{prot:newhope}, this is quite useful for Alice, which is identified as the Server in a Client-Server connection, and could still be of some use to Bob, which is the Client.\\
 The latter is solved by generating the parameter \textbf{a} from a small random seed, using an extendable output cryptographic hash function, SHAKE-128\footnote{This is an extension of the SHA-3 cryptographic hash function \cite{SHA3_FIPS}}, to generate a sequence of pseudo-random bits, which are then parsed into the coefficients of the polynomial \textbf{a}, as described in Algorithm \ref{alg:nh:parse}. The generated \textbf{a} is considered to be in the NTT domain, so there is not need to apply the transform to it. This is a legitimate choice, because the NTT transform preserves uniform noise, so no bias is introduced in the coefficients of \textbf{a} by considering it already in the NTT domain.\\
-It's worth to point out that although \verb|Parse| rejects some of the material generated by SHAKE-128, the rejection rate is only $(2^{16}-1-5q)/(2^{16}-1) \approx 0.06$. Since \textbf{a} has $n=1024$ coefficients, and each of them is a 16 bit unsigned integer, SHAKE-128 needs to generate $\approx 2.2$ kbytes of output on average.
+It is worth to point out that although \verb|Parse| rejects some of the material generated by SHAKE-128, the rejection rate is only $(2^{16}-1-5q)/(2^{16}-1) \approx 0.06$. Since \textbf{a} has $n=1024$ coefficients, and each of them is a 16 bit unsigned integer, SHAKE-128 needs to generate $\approx 2.2$ kbytes of output on average.
 \begin{b_algorithm}{Parse function}
 {S, a bit sequence, the output of SHAKE-128}
 {\textbf{a}, a polynomial, represented as an array of its coefficients}
@@ -129,11 +129,11 @@ Moreover, the authors present four different easy to sample noise distributions 
 
 \subsection{Error Distribution}
 The authors present four different easy to sample probability distribution that could be used instead of the rounded Gaussian. In order to achieve a reasonable degree of efficiency both in terms of computational cost of sampling, and of entropy required to generate the samples, the authors decide to use inverse sampling, using a pre-computed table for a cumulative density function, CDF from now on, carefully chosen to be as close as possible to a rounded Gaussian distribution\footnote{The authors use the notion of R\`enyi divergence to quantify closeness.}. We refer to \cite{frodo} for the exact tables proposed by the authors of Frodo.\\
-Let's examine the procedure for inverse sampling used in Frodo. For instance, take the first distribution\footnote{Called $D_1$ in the original paper.} proposed in \cite{frodo}. This distribution has CDF given by $T=[43,104,124,127]$. In order to inverse sample, generate an uniformly random value $y\in[0,127]$, i.e. seven random bits, and then return the smallest $\bar{x} \in [0,3]\text{ }s.t.\text{ }y\le T[\bar{x}]$. Such $\bar{x}$ can only be positive, while the rounded Gaussian also takes negative values. So, in order to "restore" the sign, an eighth uniformly random bit is generated and used to choose $s\in\{-1,1\}$, thus generating the final value $x=s\bar{x}$.\\
+Let us examine the procedure for inverse sampling used in Frodo. For instance, take the first distribution\footnote{Called $D_1$ in the original paper.} proposed in \cite{frodo}. This distribution has CDF given by $T=[43,104,124,127]$. In order to inverse sample, generate an uniformly random value $y\in[0,127]$, i.e. seven random bits, and then return the smallest $\bar{x} \in [0,3]\text{ }s.t.\text{ }y\le T[\bar{x}]$. Such $\bar{x}$ can only be positive, while the rounded Gaussian also takes negative values. So, in order to "restore" the sign, an eighth uniformly random bit is generated and used to choose $s\in\{-1,1\}$, thus generating the final value $x=s\bar{x}$.\\
 In general, the construction of a table can be viewed as taking $2^{b-1}$ samples from a rounded Gaussian\footnote{This is just for reference, the CDF are usually hand crafted} and counting the occurrences of the different absolute values. The derived PDF is then converted into a CDF. Since the sign is ignored, the CDF does not resemble a rounded Gaussian anymore, but it is easy to restore the sign, with just an additional random bit, while this procedure allows for a more compact CDF, with only half the values. This procedure has a total requirement of $b$ bits of entropy, and it only costs a constant time table lookup, which runs in $\Theta(\#T)$, and the sign multiplication.\\ 
 
 \subsection{Reconciliation}\label{sec:fr:rec}
-The reconciliation mechanism for Frodo is a generalization of the mechanism presented in \cite{peikert_2014}. This generalized mechanism allows packing one or more bit in each approximate agreed element of $\mathbb{Z}_q$\footnote{In this paragraph, $q$ is chosen to be a power of two, but this mechanism can be adapted to work with any modulus.}, similarly to the reconciliation mechanism of New Hope. On the other hand, while in New Hope there was plenty of room to add some redundancy in the agreed polynomial, this is a luxury the authors of Frodo couldn't afford. On the contrary, for realistic security levels more bits need to be packed in each approximate agreed value. In fact, in order to achieve a security level of $s$ bits, $\bar{n}$, $\bar{m}$ and $B$, the number of bits packed into an agreed value need to be chosen in such a way that $s\ge\bar{m}\bar{n}B$. Increasing $B$ allows to reduce $\bar{m}$ and $\bar{n}$, i.e. the dimension of the LWE matrices, thus decreasing not only the computational cost, but also the bandwidth requirements of the algorithm.\\
+The reconciliation mechanism for Frodo is a generalization of the mechanism presented in \cite{peikert_2014}. This generalized mechanism allows packing one or more bit in each approximate agreed element of $\mathbb{Z}_q$\footnote{In this paragraph, $q$ is chosen to be a power of two, but this mechanism can be adapted to work with any modulus.}, similarly to the reconciliation mechanism of New Hope. On the other hand, while in New Hope there was plenty of room to add some redundancy in the agreed polynomial, this is a luxury the authors of Frodo could not afford. On the contrary, for realistic security levels more bits need to be packed in each approximate agreed value. In fact, in order to achieve a security level of $s$ bits, $\bar{n}$, $\bar{m}$ and $B$, the number of bits packed into an agreed value need to be chosen in such a way that $s\ge\bar{m}\bar{n}B$. Increasing $B$ allows to reduce $\bar{m}$ and $\bar{n}$, i.e. the dimension of the LWE matrices, thus decreasing not only the computational cost, but also the bandwidth requirements of the algorithm.\\
 Consider the quantity $B$ and $\bar{B}=log_2[q]-B$. Two functions are defined starting from these two quantities: the \textit{rounding} function, as
 \begin{align*}
 \lfloor \cdot \rceil_{2^B} : \mathbb{Z}_q &\rightarrow [0,2^B-1] \\
@@ -152,16 +152,16 @@ Using these two functions, the \verb|rec| function can be defined as in \cite{pe
 where $v$ is the closest vector to $w$ s.t. $\langle v \rangle_{2^B} = b$.\\
 In order to conclude that \verb|rec| and the \textit{rounding} function can be used as reconciliation functions in Frodo, it must hold that if $\norm{v-w} < 2^{\bar{B}-2}\Rightarrow\verb|rec|(w,\langle v \rangle)=\lfloor v \rceil_{2^B}$. It is immediate that this is true if $v$ is the closest vector to $w$ with \textit{crossrounding} equal to $\langle v \rangle$, which in turn is ensured by bound on the norm of $v-w$.\\
 
-\subsection{Generation of \textbf{a}}\label{sec:fr:a_generation}
+\subsection{Generation of the parameter \textbf{a}}\label{sec:fr:a_generation}
 As mentioned above, a fresh matrix $\textbf{a} \in \mathbb{Z}^{n\times n}_q$ needs to be generated for each protocol instance. The approach followed in Frodo is similar to the one of New Hope. A small uniformly random seed is generated and shared between the parties\footnote{Remember that the parameter \textbf{a} is public}, who can generate the same \textbf{a} using it. Following the same reasoning of \cite{newhope}, the seed is expanded using a function that fits the random oracle model. In particular, the function used for the task is AES128 in ECB mode, using the seed as key and a known plaintext.\\
 The procedure starts from a "striped" matrix, $\bar{\textbf{a}}$, $s.t.$ 
 \begin{equation*}
 \bar{\textbf{a}}[i,j]=
 \begin{cases}
-i   & if j=0\text{ mod }8    \\
-j-1 & if j=1\text{ mod }8    \\
-0   & otherwise              \\
-\end{cases}
+i   & if j=0\text{ }\mathrm{mod}\text{ }8    \\
+j-1 & if j=1\text{ }\mathrm{mod}\text{ }8    \\
+0   & otherwise                              \\
+\end{cases},
 \end{equation*}
 which translates in a matrix with the following shape.
 \begin{equation*}
@@ -175,7 +175,7 @@ which translates in a matrix with the following shape.
 3  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3 & 8 & 0 & \\
 \multicolumn{11}{c}{\vdots}              & \\
 n-1& 0 & 0 & 0 & 0 & 0 & 0 & 0 &n-1& 8 & 0 & \cdots \\
-\end{bmatrix}
+\end{bmatrix}.
 \end{equation*}
 In $\bar{\textbf{a}}$, the elements are represented as 16 bit unsigned integers, memorized in little-endian order\footnote{This allows for a natural implementation on little-endian machines}. Then, the elements of a row are taken in groups of 8 and passed into AES128 in ECB mode, using the seed as key for the cipher, deriving the final $\textbf{a}$.
 Notice that the arrays used as plaintext are of the form $[i,8\cdot k,0,\dots,0]\text{ }s.t.\text{ }i\in\{0,\dots,n\},k\in\{0,\dots,n/8\}$, which are all unique, since a pair $(i,k)$ is never repeated. Because of this, and of the random oracle heuristic, the authors justify using this matrix in place of a randomly sampled matrix with uniform distribution.\\
