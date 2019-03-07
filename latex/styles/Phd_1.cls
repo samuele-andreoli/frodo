@@ -21,7 +21,7 @@
 \if@compatibility\else
 \DeclareOption{a4paper}
    {\setlength\paperheight {297mm}%
-    \setlength\paperwidth  {210mm}}
+    \setlength\paperwidth  {215mm}}
 \DeclareOption{a5paper}
    {\setlength\paperheight {210mm}%
     \setlength\paperwidth  {148mm}}
@@ -230,7 +230,7 @@
     \pagestyle{empty}%
     \begin{quotation}
     \begin{center}
-        \expandafter{\large{\@university}} \\
+      \hskip-0.25in  \expandafter{\large{\@university}} \\
         \vskip0.3in plus 1fill minus 0.1in
         %\expandafter{\@faculty}\\
         %\vskip0.1in plus 1fill minus 0.1in
@@ -238,7 +238,7 @@
          \vskip0.2in plus 1fill minus 0.1in
          \begin{figure}[h!]
           \centering
-         \includegraphics[width=2.4cm]{\@Logo}
+         \includegraphics[width=4.0cm]{\@Logo}
          \end{figure}
     \ifph@d  
        \expandafter{\@phdtitle} \\
@@ -291,7 +291,7 @@
           \sigskip {Supervisors: }  {\hspace{1.1cm} \@supervisor}
 
           \hspace{3.8cm}{\@firstreader} \\   %senza spazio sopra 2.6
-          \sigskip {Second Reader:} {\,   \@secondreader} \\
+          \sigskip {Second Reader:} {\hspace{0.65cm}   \@secondreader} \\
         \else
           \sigskip {Supervisor: } \hspace{0.7cm} {\@supervisor} \\
           \sigskip
@@ -332,7 +332,7 @@
     \pagestyle{empty}%
     \begin{quotation}
     \begin{center}
-       \expandafter{\large{\@university}} 
+      \hskip-0.25in \expandafter{\large{\@university}} 
         \vskip0.3in plus 1fill minus 0.1in
         %\expandafter{\@faculty}
         %\vskip0.1in plus 1fill minus 0.1in

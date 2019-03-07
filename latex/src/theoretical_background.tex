@@ -386,7 +386,6 @@ In this section the scope of this presentation will be further narrowed to bette
 The LWE problem has been one of the first candidates to provide a base for practical lattice-based cryptographic primitives. As mentioned in Section \ref{sec:bg:prob}, most of the problem introduced until now would yield cryptographic primitives having a basis of the lattice as private key and another as public key. This choice would be inconvenient as a basis needs $n^2$ elements to be represented. Such a large representation would not be practical, especially for the public key which needs to be transmitted to other parties.\\
 On the other hand, the LWE shifts the focus of the problem to specific elements in the lattice which only need $n$ elements to be represented, while the lattice itself becomes a mere parameter of the problem.\\
 
-
 \begin{definition}[Search LWE]
 Let $\mathscr{L}$ be a lattice, $\mathbf{B}$ a basis for $\mathscr{L}$, $\chi[\mathbb{Z}_q^n]$ a Discrete Gaussian Distribution, and $\mathbf{s}\in\mathbb{Z}_q^n$. Given the noisy products $\mathbf{v}_i=\mathbf{Bs} + \mathbf{e}_i$, where $\mathbf{e}_i\xleftarrow{\$}\chi[\mathbb{Z}_q^n]$, find $\mathbf{s}$.
 \end{definition}
@@ -463,3 +462,17 @@ Last but no least, the use of the polynomial product in $\mathbb{Z}[x]/(f)$ has 
 
 \subsubsection{Security concerns}
 The benefits of using the RLWE problem in building cryptosystems are undeniable. However, the introduction of additional structure in the lattices raised few security concerns. While some of the hard problems of lattices have been proven to be equally hard in Ideal Lattice as they are in the setting of Generic Lattices, this is not the case for the RLWE problem. Indeed, the hardness of the RLWE problem is still an open question. The lack of attacks against Ideal Lattices that fare better than their generic counterpart is reassuring, but without a formal proof of the equivalence of the two problems there is no guarantee this is going to always be the case.
+
+\subsection{Hardness of the LWE problem}
+In order to assess the hardness of the LWE problem, it is worth introducing two notions of hardness that a problem can satisfy.
+
+\begin{definition}[Worst-Case and Average-Case Hardness]
+A problem \textbf{P} is said to be worst-case hard if at least one instance of the problem is hard.
+On the other hand, a problem \textbf{P'} is said to be average-case hard if the average instance of the problem is hard.
+\end{definition}
+\begin{remark}
+It is quite evident that the average-case hardness of a problem is a stronger property that the worst-case hardness.
+\end{remark}
+In order for a problem to be suitable for the construction of cryptographic primitives it needs to be average-case hard. This requirement is stricter than one might think as many known hard problems are worst-case hard, but not average-case hard.\\
+This is not the case for the LWE problem, which can be proven to be average-case hard both in a classical setting and in a quantum one. The foundation of this proof is the worst-case hardness of the SVP problem. This proposition has been proven in multiple ways using reductions from notorious hard problems such as the Subset Sum problem, or the Exact Set Cover, with early results dating back to 1998 \cite{svp_hardness}. With these results on the hardness of lattice based problems in place, the last piece of the puzzle to prove the average-case hardness of the LWE problem is a worst-to-average reduction from SVP to LWE, i.e. a reduction proving that an oracle solving an average instance of the LWE problem could be used to solve a worst-case instance of the SVP problem.\\
+In fact, a worst-to-average quantum reduction for the LWE problem from the SVP was first constructed by Regev in \cite{lwe_q_hardness}, while a worst-to-average reduction from the same problem was constructed by Peikert in \cite{lwe_c_hardness}. These reductions prove that the LWE problem is average case hard, making it suitable as a basis for cryptosystems. This robust foundation, paired with the remarkable performance of the resulting primitives, makes the LWE problem one of the strongest candidates for building post quantum secure primitives.
