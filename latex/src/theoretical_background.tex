@@ -198,7 +198,7 @@ D_{s,\mathbf{c}}(\mathbf{x})=\frac{\rho_{s,\mathbf{c}}(\mathbf{x})}{s^n}.
 \end{equation*}
 \end{definition}
 
-This distribution would already be sufficient to sample noise efficiently as it is easy to see that it is the sum of $n$ orthogonal one dimensional Gaussian distributions. This means that it can be approximated with arbitrary precision using known techniques. However, it is worth talink the time to define a discrete counterpart which can be more efficiently sampled when only a finite precision is available. The first step required to reach this goal is to define the Gaussian mass of a lattice $\mathscr{L}$.
+This distribution would already be sufficient to sample noise efficiently as it is easy to see that it is the sum of $n$ orthogonal one dimensional Gaussian distributions. This means that it can be approximated with arbitrary precision using known techniques. However, it is worth taking the time to define a discrete counterpart which can be more efficiently sampled when only a finite precision is available. The first step required to reach this goal is to define the Gaussian mass of a lattice $\mathscr{L}$.
 
 \begin{definition}[Gaussian Mass]
 Let $\mathscr{L}$ be a lattice, $\mathbf{c}\in\mathbb{R}^n$ and consider $s>0$. The Gaussian mass of $\mathscr{L}$ is defined as
@@ -240,7 +240,7 @@ Although both tighter and more general bounds are known on the smoothing paramet
 
 The NTT is a powerful instrument in improving the efficiency of Lattice-based cryptography in the setting of Ideal Lattices on $\mathbb{Z}_q^n$. As seen in Section \ref{sec:bg:ideal}, one of the drawbacks of Ideal Lattices is the cost of polynomial multiplications. For the sake of exposition, in this section the polynomials in $\mathbb{Z}_q[x]/(f)$, where $f$ is a primitive polynomial $s.t.$ $deg(f)=n$ will be identified with the vectors of their coefficients in $\mathbb{Z}_q^n$. Using the NTT on these representations it is possible to compute the polynomial products with a cheap component-wise product, using then the inverse transform to restore the coefficients in $\mathbb{Z}_q^n$.\\
 
-Let us see how the NTT works. It can be seen as a specialised from of the Discrete Fourier Transform for number fields. Let us start introducig the DFT, which works on complex vectors as follows.
+Let us see how the NTT works. It can be seen as a specialised from of the Discrete Fourier Transform for number fields. Let us start introducing the DFT, which works on complex vectors as follows.
 
 \begin{definition}
 Let $\mathbf{x}\in\mathbb{C}^n$, the DFT of $\mathbf{x}$ is defined as
@@ -318,33 +318,33 @@ It is worth pointing out that the following problems are hard\footnote{Under the
 The main formulation for the SVP is the search problem defined as follows.
 
 \begin{definition}[Search Shortest Vector Problem (SVP)]
-Let $\mathscr{L}$ be a Lattice, and $\mathbf{B}$ a basis for $\mathscr{L}$, the SVP consists in finding $\mathbf{v}\in\mathscr{L}$ $s.t.$ $\norm{\mathbf{v}} = \lambda$, where $\lambda$ is the minimum distance of the Lattice $\mathscr{L}$.
+Let $\mathscr{L}$ be a Lattice. Solving the SVP on $\mathscr{L}$ means finding $\mathbf{v}\in\mathscr{L}$ $s.t.$ $\norm{\mathbf{v}} = \lambda$, where $\lambda$ is the minimum distance of the Lattice $\mathscr{L}$.
 \end{definition}
 
 It is also possible to give a decisional formulation, defined as follows.
 
 \begin{definition}[Decisional SVP]
-Let $\mathscr{L}$ be a Lattice, and $\mathbf{B}$ a basis for $\mathscr{L}$, given $\mathbf{v}\in\mathscr{L}$, determine if $\norm{\mathbf{v}} = \lambda$.
+Let $\mathscr{L}$ be a Lattice, $\mathbf{v}\in\mathscr{L}$. Solving the decisional SVP means determining if $\norm{\mathbf{v}} = \lambda$.
 \end{definition}
 
 The SVP problem can also be generalized as follows.
 
 \begin{definition}[Shortest Independent Vectors Problem (SIVP)]
-Let $\mathscr{L}$ be a lattice, and $\mathbf{B}$ a basis for $\mathscr{L}$, find a set $S=\{s_i\}_{i=0}^{n-1}\subset \mathscr{L}$ of linearly independent vectors $s.t$ $\forall i$ $\norm{\mathbf{s_i}} = \lambda_i$, where $\lambda_i$ is the i-th successive minimum of the lattice $\mathscr{L}$.
+Let $\mathscr{L}$ be a lattice. Find a set $S=\{s_i\}_{i=0}^{n-1}\subset \mathscr{L}$ of linearly independent vectors $s.t$ $\forall i$ $\norm{\mathbf{s_i}} = \lambda_i$, where $\lambda_i$ is the i-th successive minimum of the lattice $\mathscr{L}$.
 \end{definition}
 
 Moreover, it is worth introducing the approximate problems $SVP_\gamma$, $SIVP_\gamma$ and $GapSVP_\gamma$, which are often more useful in security reductions than the exact counterpart.
 
 \begin{definition}[Approximate SVP]
-Let $\mathscr{L}$ be a lattice, $\mathbf{B}$ a basis for $\mathscr{L}$, and $\gamma(n)\geq1$ the approximation factor, find a $\mathbf{v}\in\mathscr{L}\backslash0$ $s.t.$ $\norm{\mathbf{v}} \leq \gamma(n)\lambda$.
+Let $\mathscr{L}$ be a lattice and $\gamma(n)\geq1$ the approximation factor. Find a $\mathbf{v}\in\mathscr{L}\backslash0$ $s.t.$ $\norm{\mathbf{v}} \leq \gamma(n)\lambda$.
 \end{definition}
 
 \begin{definition}[\text{Approximate SIVP (SIVP$_\gamma$)}]
-Let $\mathscr{L}$ be a lattice, $\mathbf{B}$ a basis for $\mathscr{L}$, and $\gamma(n)\geq1$ the approximation factor, find a set $S={s_i}_{i=0}{n-1}\subset \mathscr{L}$ of linearly independent vectors $s.t$ $\forall i$ $\norm{\mathbf{s_i}} \leq \gamma(n)\lambda_i$.
+Let $\mathscr{L}$ be a lattice and $\gamma(n)\geq1$ the approximation factor. Find a set $S=\{s_i\}_{i=0}^{n-1}\subset \mathscr{L}$ of linearly independent vectors $s.t$ $\forall i$ $\norm{\mathbf{s_i}} \leq \gamma(n)\lambda_i$.
 \end{definition}
 
 \begin{definition}[\text{Approximate Decisional SVP (GapSVP$_\gamma$)}]
-Let $\mathscr{L}$ be a lattice, $\mathbf{B}$ a basis for $\mathscr{L}$, and $\gamma(n)\geq1$ the approximation factor, tell which holds between $\lambda\leq1$ or $\lambda > \gamma(n)$.
+Let $\mathscr{L}$ be a lattice and $\gamma(n)\geq1$ the approximation factor. Tell which holds between $\lambda\leq1$ or $\lambda > \gamma(n)$.
 \end{definition}
 \begin{remark}
 An algorithm to solve the GapSVP$_\gamma$ is allowed to error if neither of the options are true.
@@ -354,7 +354,7 @@ An algorithm to solve the GapSVP$_\gamma$ is allowed to error if neither of the 
 The CVP problem family is closely related to the SVP. Indeed, it can be seen as a generalization of it.
 
 \begin{definition}[Search CVP]
-Let $\mathscr{L}$ be a lattice, $\mathbf{B}$ a basis for $\mathscr{L}$, and a vector $\mathbf{v}\in\mathscr{\mathbb{R}^n}$, find the vector $\mathbf{w}\in\mathscr{L}$ $s.t.$ $\forall\mathbf{y}\in\mathscr{L},\norm{\mathbf{v}-\mathbf{w}} < \norm{\mathbf{v}-\mathbf{y}}$.
+Let $\mathscr{L}$ be a lattice and $\mathbf{v}\in\mathscr{\mathbb{R}^n}$. Find the vector $\mathbf{w}\in\mathscr{L}$ $s.t.$ $\forall\mathbf{y}\in\mathscr{L},\norm{\mathbf{v}-\mathbf{w}} < \norm{\mathbf{v}-\mathbf{y}}$.
 \end{definition}
 
 Similarly to the SVP, there are alternative formulations such as the Decisional and Approximate SVP. All of them can be derived as they were in the SVP setting.
@@ -362,7 +362,7 @@ Similarly to the SVP, there are alternative formulations such as the Decisional 
 \subsubsection{BDD}
 
 \begin{definition}[\text{Bounded Distance Decoding ($\alpha$-BDD)}]
-Let $\mathscr{L}$ be a lattice, $\mathbf{B}$ a basis for $\mathscr{L}$, $\alpha\in[0,1]$, and $\mathbf{t}\in\mathbb{R}^n$. Assuming that $\exists \mathbf{y}\in\mathscr{L},\norm{\mathbf{t}-\mathbf{y}} < \alpha\lambda$, find the unique lattice vector $\mathbf{v}\in\mathscr{L}$ $s.t.$ $\norm{\mathbf{t}-\mathbf{v}}<\alpha\lambda$.
+Let $\mathscr{L}$ be a lattice, \mbox{$\mathbf{t}\in\mathbb{R}^n$} and \mbox{$\alpha\in[0,1]$}. Assuming that $\exists \mathbf{y}\in\mathscr{L},\norm{\mathbf{t}-\mathbf{y}} < \alpha\lambda$, find the unique lattice vector $\mathbf{v}\in\mathscr{L}$ $s.t.$ $\norm{\mathbf{t}-\mathbf{v}}<\alpha\lambda$.
 \end{definition}
 
 \begin{remark}
@@ -372,7 +372,7 @@ An algorithm to solve the $\alpha$-BDD is allowed to error if the bound on the d
 \subsubsection{SIS}
 
 \begin{definition}[Short Integer Solution Problem]
-Given $B\in\mathbb{Z}_q^{m\times n}$, and $\alpha > 0$, find $\mathbf{x}\in[-\alpha,\alpha]^m\backslash{0}$, $s.t.$ $B\mathbf{x}=0$ $\mathrm{mod}$ $q$.
+Let $B\in\mathbb{Z}_q^{m\times n}$, and $\alpha > 0$. Find $\mathbf{x}\in[-\alpha,\alpha]^m\backslash{0}$, $s.t.$ $B\mathbf{x}=0$ $\mathrm{mod}$ $q$.
 \end{definition}
 
 \begin{remark}
