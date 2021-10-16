@@ -1,4 +1,17 @@
-# FRODO! Take off the ring
+# Yo motherfucker fork this!!!
+
+Ha!!
+
+Hi Sam, what's up. Me and the rest of the team here miss ya dude. Don't be a stranger. You keep in touch and if you need anything let us know.
+
+We seem to be doing allright, the company is on fire. Over 2B in deposits now. You build that motherfucker!! Ask your profs if they have done something equally as remarkable in their 20's if they start giving you shit.
+
+You wouldn't recognize the company now over 100 people.
+
+Anyway, if you ever get back to London way make sure we know, I'd love to take you out for that final drink we never got to do.
+
+Cheers,
+Brian
 
  * **category**: Library
  * **copyright**: 2019 Samuele Andreoli
